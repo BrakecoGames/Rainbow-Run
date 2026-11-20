@@ -30,6 +30,10 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   await page.keyboard.press('Escape');
   await ev(() => { __rr.save.coins = 0; __rr.toMenu(); });
   ok(!(await page.isVisible('#shopDot')), 'shop dot hidden when nothing is affordable');
+  // toast queue: never more than two at once, all eventually shown
+  await ev(() => { for (let i = 0; i < 5; i++) __rr.toast('Toast ' + i); });
+  ok(await ev(() => document.getElementById('toasts').children.length === 2), 'max two toasts at once');
+  await page.waitForFunction(() => document.getElementById('toasts').textContent.includes('Toast 4'), null, { timeout: 15000 }).then(() => ok(true, 'queued toasts shown later'), () => ok(false, 'queued toasts shown later'));
   // mute toggle persists
   await page.click('#muteBtn'); ok(await ev(() => __rr.save.muted === true), 'mute toggles');
   await page.click('#muteBtn'); ok(await ev(() => __rr.save.muted === false), 'unmute toggles');

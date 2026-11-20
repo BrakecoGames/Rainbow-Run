@@ -5,7 +5,7 @@ const fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
 const ROOT = path.join(__dirname, '..');
 const THREE_JS = fs.readFileSync(path.join(ROOT, 'crazygames', 'three.min.js'), 'utf8');
-const HOOK = `\nwindow.__rr = { G, get save() { return save; }, set save(v) { save = v; }, obstacles, items, decor, startRun, toMenu, gameOver, revive, jump, roll, moveLane, useBoost, persist, loadSave, checkMissions, renderer, scene, cur, collect, crash, addMult, WORLDS, UNICORNS, get run() { return run; }, frame, QL, addObstacle, OBS };\n`;
+const HOOK = `\nwindow.__rr = { G, get save() { return save; }, set save(v) { save = v; }, obstacles, items, decor, startRun, toMenu, gameOver, revive, jump, roll, moveLane, useBoost, persist, loadSave, checkMissions, renderer, scene, cur, collect, crash, addMult, WORLDS, UNICORNS, get run() { return run; }, frame, QL, addObstacle, OBS, toast };\n`;
 
 function buildHtml(file = 'rainbow-run.html') {
   let s = fs.readFileSync(path.join(ROOT, file), 'utf8');

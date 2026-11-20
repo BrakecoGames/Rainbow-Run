@@ -125,3 +125,14 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8.5 | 8* | 8.5 | 8.5 | 8 | 8* | 7* | 9 | 8* | 8* |
 
+## Iteration 9 – Toast queue and ad-less revive button
+- **Problem:** several mission/world toasts could stack (4+ seen in screenshots) and cover the track right where obstacles appear. Without an ad SDK (e.g. ad blocker) the "Watch an ad to continue" button was shown but could only answer with an error toast.
+- **Change:** toasts are queued, at most two on screen; queued ones follow after 2.2 s. During a run they are smaller and sit below the multiplier (on short landscape screens: just above the boost button). The revive button is hidden when the ad SDK is not available (still shown in the test build).
+- **Files:** `rainbow-run.html`, `tests/functional.js`, `tests/harness.js`, `tests/shots.js`, `README.md`.
+- **Tests:** functional 55/55 (max two toasts, queued toast appears later).
+- **Remaining:** none.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8.5 | 8* | 8.5 | 9 | 8 | 8* | 7* | 9 | 8* | 8.5* |
+

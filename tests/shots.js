@@ -15,7 +15,7 @@ const SIZES = [['desk', 1280, 720, false], ['phoneP', 390, 844, true], ['phoneL'
     await page.evaluate(() => { __rr.G.invT = 0; __rr.G.mode = 'play'; });
     await s.run(120, 'idle'); await s.step(200);
     await snap('over');
-    for (const b of ['shopBtn', 'misBtn']) { await page.evaluate(() => __rr.toMenu()); await page.click('#' + b); await snap(b); }
+    for (const b of ['shopBtn', 'misBtn']) { await page.evaluate(() => { __rr.toMenu(); if (!document.getElementById('gift').hidden) document.getElementById('giftBtn').click(); }); await page.click('#' + b); await snap(b); }
     console.log(nm, 'errors', errors);
     await browser.close();
   }

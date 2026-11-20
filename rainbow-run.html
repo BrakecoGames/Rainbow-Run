@@ -244,6 +244,9 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
   text-shadow:0 3px 0 rgba(60,20,90,.7);pointer-events:none;opacity:0;white-space:nowrap}
 #closeMsg.show{animation:ccpop .9s ease-out}
 @keyframes ccpop{0%{opacity:0;transform:translate(-50%,10px) scale(.7)}15%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-14px) scale(1)}100%{opacity:0;transform:translate(-50%,-26px)}}
+#hud:not([hidden]) ~ #toasts{top:calc(env(safe-area-inset-top,0px) + 168px);gap:6px}
+#hud:not([hidden]) ~ #toasts .toast{font-size:14px;padding:6px 12px;border-radius:12px;opacity:.95}
+@media (max-height:500px){#hud:not([hidden]) ~ #toasts{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
 /* Tutorial hint */
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
@@ -3794,7 +3797,7 @@ function gameOver() {
   $('oMult').textContent = 'x' + G.maxMult;
   $('oScore').textContent = fmt(G.score); $('oDist').textContent = fmt(G.d); $('oStars').textContent = fmt(G.stars); $('oCoins').textContent = fmt(G.coins);
   $('newRec').hidden = !isRec;
-  $('reviveRow').hidden = G.revived;
+  $('reviveRow').hidden = G.revived || (!CG.ready && !TEST); // no ad SDK (e.g. ad blocker): don't offer a button that cannot work
   const earned = save.coins - G.coins0;
   $('oEarnN').textContent = `+${fmt(Math.max(0, earned))} coins`;
   $('oEarnX').textContent = G.distBonus ? `incl. ${fmt(G.distBonus)} distance bonus` : '';
@@ -3884,9 +3887,15 @@ function showBanner(t, sub) {
   const b = $('banner'); b.innerHTML = `<small>${sub}</small>${t}`; b.classList.add('show');
   clearTimeout(showBanner.t); showBanner.t = setTimeout(() => b.classList.remove('show'), 2000);
 }
-function toast(t) {
-  const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; $('toasts').appendChild(d);
-  setTimeout(() => d.remove(), 3200);
+// at most two toasts on screen; the rest wait their turn so the track stays visible
+const toastQ = [];
+function toast(t) { toastQ.push(t); pumpToasts(); }
+function pumpToasts() {
+  const box = $('toasts');
+  while (toastQ.length && box.children.length < 2) {
+    const d = document.createElement('div'); d.className = 'toast'; d.textContent = toastQ.shift(); box.appendChild(d);
+    setTimeout(() => { d.remove(); pumpToasts(); }, toastQ.length ? 2200 : 3000);
+  }
 }
 function applyWorldPreview() {
   clearAll(); G.d = 0; G.nextDecor = -10; G.nextTerrain = -40;
