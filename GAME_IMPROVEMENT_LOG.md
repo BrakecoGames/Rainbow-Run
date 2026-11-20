@@ -103,3 +103,25 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8 | 7.5* | 8.5* | 8.5 | 8 | 8* | 6* | 8.5 | 7.5* | 8* |
 
+## Iteration 7 – Rendering performance (draw calls)
+- **Problem:** 600–1,700 draw calls and up to 1 M triangles per frame (measured with `renderer.info`). Decor props were already merged per material, but obstacles were not (e.g. Sunset Skies: 379 obstacle meshes on screen). There was no fallback beyond lowering the pixel ratio.
+- **Change:** obstacles are now baked with the existing `bakeProp` merger at full detail (no sphere LOD swap, spinning parts kept separate via `spinNode`); merged geometry is disposed through a single `dropObs()` helper on every removal path (incl. revive). Adaptive *low detail*: only when FPS stays < 40 for two 2-second windows while the pixel ratio is already at its floor (≤ 0.75), 65 % of far props and 60 % of side clouds are skipped for new spawns; turns off again at > 58 FPS.
+- **Files:** `rainbow-run.html`, `tests/harness.js`.
+- **Tests:** draw-call probe per world: obstacle meshes 2–9× fewer (W2 119→27, W6 220→51, W8 379→40); low-detail mode cuts total draw calls 10–30 % and triangles up to 50 %. Visual A/B gallery of all obstacle types (old vs baked, same seed): identical. All suites pass.
+- **Not testable here:** real FPS on devices (SwiftShader only); low-detail thresholds are an estimate.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7.5* | 8.5 | 8.5 | 8 | 8* | 7* | 8.5 | 8* | 8* |
+
+## Iteration 8 – Close-call bonus (+ tutorial pacing fix)
+- **Problem:** gameplay rewarded only avoiding and collecting; skilful late dodges gave no feedback. While testing, found that the first random row came only ~13 m after the last tutorial row (rowGap switched to normal immediately) – a likely first-run crash.
+- **Change:** leaving a lane less than 0.42 s before its obstacle passes = **Close call!** (+50 × multiplier points, +6 % boost meter, pop-up text and chime; not during boost or on tutorial rows). New mission line "Make N close calls" (10 / 40 / 120 / 300 / 800; daily 8). New stat `close` in lifetime/daily stats with safe defaults for old saves. Rows stay 34 m apart until the tutorial is completed.
+- **Files:** `rainbow-run.html`, `tests/functional.js`, `tests/tutorial.js`.
+- **Tests:** functional 53/53 (last-moment dodge → close call; early dodge → none); tutorial 16/16 ×3 runs (previously flaky 2 of 3 because of the row-gap bug); gift 10/10.
+- **Remaining:** none known.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8.5 | 8* | 8.5 | 8.5 | 8 | 8* | 7* | 9 | 8* | 8* |
+

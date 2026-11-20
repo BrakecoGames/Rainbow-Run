@@ -26,7 +26,7 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
     if (k === 'lane') { await page.screenshot({ path: process.env.SHOT || '/dev/null' }).catch(() => {}); }
     await page.keyboard.press(keys[k]);
     await s.step(90);
-    ok(await ev(() => __rr.G.mode === 'play'), `${k}: player passes the obstacle`);
+    ok(await ev(() => __rr.G.mode === 'play'), `${k}: player passes the obstacle` + await ev(() => ' ' + [__rr.G.mode, __rr.G.dieKind, Math.floor(__rr.G.d), __rr.G.lane, __rr.obstacles.filter(o => Math.abs(__rr.G.d - o.s) < 6).map(o => o.kind + o.lane + (o.tut ? 't' : '') + ':' + (__rr.G.d - o.s).toFixed(1)).join(',')].join(' ')));
   }
   await s.step(120);
   ok(await ev(() => __rr.save.tut === 1), 'tutorial marked done and saved');

@@ -5,7 +5,7 @@ const fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
 const ROOT = path.join(__dirname, '..');
 const THREE_JS = fs.readFileSync(path.join(ROOT, 'crazygames', 'three.min.js'), 'utf8');
-const HOOK = `\nwindow.__rr = { G, get save() { return save; }, set save(v) { save = v; }, obstacles, items, decor, startRun, toMenu, gameOver, revive, jump, roll, moveLane, useBoost, persist, loadSave, checkMissions, renderer, scene, cur, collect, crash, addMult, WORLDS, UNICORNS, get run() { return run; }, frame };\n`;
+const HOOK = `\nwindow.__rr = { G, get save() { return save; }, set save(v) { save = v; }, obstacles, items, decor, startRun, toMenu, gameOver, revive, jump, roll, moveLane, useBoost, persist, loadSave, checkMissions, renderer, scene, cur, collect, crash, addMult, WORLDS, UNICORNS, get run() { return run; }, frame, QL, addObstacle, OBS };\n`;
 
 function buildHtml(file = 'rainbow-run.html') {
   let s = fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -32,7 +32,7 @@ async function launch({ width = 1280, height = 720, mobile = false, file, storag
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
-  await page.goto('http://rr.local/');
+  await page.goto('http://rr.local/', { timeout: 180000 });
   await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
   return { browser, ctx, page, errors };
 }

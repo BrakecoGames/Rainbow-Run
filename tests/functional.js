@@ -50,6 +50,21 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   await ev(() => { __rr.G.boost = 1; }); await page.keyboard.press('Shift'); ok(await ev(() => __rr.G.boostT > 0), 'Shift uses magic boost');
   await ev(() => { const it = { type: 'magnet', mesh: { position: { x: 0, y: 1, z: 0 } } }; __rr.collect(it); });
   ok(await ev(() => __rr.G.power.magnet > 9.9), 'upgraded magnet lasts 10 s');
+  // close call: leave the lane of a blocking obstacle at the last moment
+  const cc = await ev(() => {
+    const G = __rr.G; G.invT = 0; G.boostT = 0; for (const o of __rr.obstacles) o.mesh.visible = false; __rr.obstacles.length = 0;
+    const def = __rr.OBS[G.world].find(d => d.kind === 'full' && !d.move && !d.fall);
+    const L = G.lane; __rr.addObstacle(def, L, G.d + G.speed * 0.25);
+    const sc = G.score; __step(3); __rr.moveLane(L === 0 ? 1 : -1); __step(40);
+    return { close: __rr.run.close, gain: G.score - sc, mode: G.mode, txt: document.getElementById('closeMsg').textContent };
+  });
+  ok(cc.close === 1 && cc.mode === 'play' && /Close call! \+/.test(cc.txt), 'last-moment dodge gives a close call (' + cc.txt + ')');
+  const cc2 = await ev(() => {
+    const G = __rr.G; const L = G.lane; const def = __rr.OBS[G.world].find(d => d.kind === 'full' && !d.move && !d.fall);
+    __rr.moveLane(L === 0 ? 1 : -1); __step(60); __rr.addObstacle(def, L, G.d + 30); __step(150); return __rr.run.close;
+  });
+  ok(cc2 === 1, 'early dodge gives no close call');
+  await ev(() => { __rr.G.invT = 30; });
   // run until death
   await ev(() => { __rr.G.invT = 0; });
   const r = await s.run(300, 'idle'); await s.step(200);
