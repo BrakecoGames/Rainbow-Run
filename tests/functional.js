@@ -16,6 +16,20 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
     await page.keyboard.press('Escape');
     ok(await page.isVisible('#menu') && !(await page.isVisible('#' + id)), `Escape closes ${id}`);
   }
+  // upgrades shop
+  await ev(() => { __rr.save.coins = 1000; __rr.toMenu(); });
+  ok(await page.isVisible('#shopDot'), 'shop dot shows when something is affordable');
+  await page.click('#shopBtn'); await page.click('#shopTabs .tab[data-t=upg]');
+  ok(await page.isVisible('#upgList') && !(await page.isVisible('#shopGrid')), 'Upgrades tab shows upgrade list');
+  ok(await page.locator('#upgList .upg').count() === 4, '4 upgrades listed');
+  await page.locator('#upgList .upg').first().locator('button').click();
+  ok(await ev(() => __rr.save.upg.magnet === 1 && __rr.save.coins === 800), 'buying magnet level 1 costs 200');
+  ok(await page.locator('#upgList .upg').first().locator('.pips i.on').count() === 1, 'level pip shown');
+  await page.screenshot({ path: process.env.SHOT || '/dev/null' }).catch(() => {});
+  await page.click('#shopTabs .tab[data-t=uni]'); ok(await page.isVisible('#shopGrid'), 'Unicorns tab back');
+  await page.keyboard.press('Escape');
+  await ev(() => { __rr.save.coins = 0; __rr.toMenu(); });
+  ok(!(await page.isVisible('#shopDot')), 'shop dot hidden when nothing is affordable');
   // mute toggle persists
   await page.click('#muteBtn'); ok(await ev(() => __rr.save.muted === true), 'mute toggles');
   await page.click('#muteBtn'); ok(await ev(() => __rr.save.muted === false), 'unmute toggles');
@@ -34,6 +48,8 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   await page.keyboard.press('Escape'); ok(await ev(() => __rr.G.mode === 'play'), 'Escape resumes');
   // collect + boost
   await ev(() => { __rr.G.boost = 1; }); await page.keyboard.press('Shift'); ok(await ev(() => __rr.G.boostT > 0), 'Shift uses magic boost');
+  await ev(() => { const it = { type: 'magnet', mesh: { position: { x: 0, y: 1, z: 0 } } }; __rr.collect(it); });
+  ok(await ev(() => __rr.G.power.magnet > 9.9), 'upgraded magnet lasts 10 s');
   // run until death
   await ev(() => { __rr.G.invT = 0; });
   const r = await s.run(300, 'idle'); await s.step(200);

@@ -211,6 +211,16 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 .lb .sc{font-family:var(--display);font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
 .lb .dt{font-size:12px;color:var(--muted);text-align:right;grid-row:span 2}
 .lb .in{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.btn{position:relative}
+.dot{position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 2px 0 rgba(90,30,150,.4)}
+.upg{background:rgba(255,255,255,.2);border-radius:16px;padding:10px 12px;display:grid;grid-template-columns:48px 1fr auto;gap:4px 12px;align-items:center}
+.upg .uic{grid-row:span 2;width:48px;height:48px;border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-family:var(--display);font-size:22px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.upg .un{font-family:var(--display);font-size:19px;line-height:1.1}
+.upg .ud{font-size:13px;color:var(--muted);font-weight:800}
+.upg .pips{display:flex;gap:4px;margin-top:2px}
+.upg .pips i{width:18px;height:8px;border-radius:99px;background:rgba(60,20,110,.35)}
+.upg .pips i.on{background:var(--sun)}
+.upg .btn{grid-row:span 2;font-size:16px;padding:8px 14px;white-space:nowrap}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
 /* Tutorial hint */
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
@@ -264,7 +274,7 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
       <button class="btn big" id="playBtn">Play</button>
       <div class="startin" id="startIn">Start in Candy Land</div>
       <div class="row">
-        <button class="btn alt" id="shopBtn">Unicorns</button>
+        <button class="btn alt" id="shopBtn">Shop<i class="dot" id="shopDot" hidden></i></button>
         <button class="btn alt" id="misBtn">Missions</button>
         <button class="btn alt" id="lbBtn">Scores</button>
         <button class="btn alt" id="muteBtn">Sound on</button>
@@ -295,8 +305,10 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 
 <section class="screen" id="shop" hidden>
   <div class="panel">
-    <div class="topbar"><button class="roundbtn" data-back aria-label="Back">‹</button><h2>Unicorns</h2><div class="pill"><i class="ico coin"></i><span id="sCoins">0</span></div></div>
+    <div class="topbar"><button class="roundbtn" data-back aria-label="Back">‹</button><h2>Shop</h2><div class="pill"><i class="ico coin"></i><span id="sCoins">0</span></div></div>
+    <div class="tabs" id="shopTabs" role="tablist"><button class="tab on" data-t="uni" role="tab">Unicorns</button><button class="tab" data-t="upg" role="tab">Upgrades</button></div>
     <div class="grid" id="shopGrid"></div>
+    <div class="mlist" id="upgList" hidden></div>
   </div>
 </section>
 
@@ -476,6 +488,16 @@ const POWERS = {
   superjump: { name: 'Superjump', color: 0x3ddc84, dur: 8 }
 };
 
+/* upgrades: each level makes a power-up last longer or the magic boost charge faster */
+const UPG_COST = [200, 450, 800, 1400, 2200];
+const UPGRADES = [
+  { id: 'magnet', name: 'Magnet', ic: 'U', color: 0xff5d7a, val: l => POWERS.magnet.dur + 2 * l, unit: 's', txt: 'Pulls stars to you' },
+  { id: 'double', name: '2x Stars', ic: '2x', color: 0xd9a400, val: l => POWERS.double.dur + 2 * l, unit: 's', txt: 'Every star counts twice' },
+  { id: 'superjump', name: 'Superjump', ic: '↑', color: 0x3ddc84, val: l => POWERS.superjump.dur + 2 * l, unit: 's', txt: 'Jump extra high' },
+  { id: 'boost', name: 'Magic boost', ic: '★', color: 0x9b5cff, val: l => 100 + 15 * l, unit: '%', txt: 'Charge speed from stars' }
+];
+const upLv = id => Math.min(UPG_COST.length, (save.upg && save.upg[id]) || 0);
+const powerDur = k => UPGRADES.find(u => u.id === k) ? UPGRADES.find(u => u.id === k).val(upLv(k)) : POWERS[k].dur;
 const MISSIONS = [
   { id: 'stars', stat: 'stars', mode: 'total', daily: 100, goals: [250, 1000, 3000, 8000, 20000], txt: g => `Collect ${fmt(g)} stars` },
   { id: 'dist', stat: 'dist', mode: 'best', daily: 2000, goals: [1000, 2500, 4000, 6000, 10000], txt: g => `Run ${fmt(g)} m in one run` },
@@ -492,7 +514,7 @@ const DAILY_REWARD = 150;
 /* ================= Save ================= */
 const SAVE_KEY = TEST ? 'rainbowrun_test' : 'rainbowrun_v1';
 const zeroStats = () => ({ stars: 0, coins: 0, jumps: 0, rolls: 0, powerups: 0, boosts: 0, dist: 0, score: 0, unicorns: [] });
-const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [], tut: 0 });
+const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [], tut: 0, upg: {} });
 let save = defaultSave();
 function showVersion() {
   const d = new Date(BUILD_DATE + 'T12:00:00');
@@ -505,6 +527,7 @@ function loadSave() {
   save = Object.assign(defaultSave(), s || {});
   save.life = Object.assign(zeroStats(), save.life || {});
   if (!Array.isArray(save.runs)) save.runs = [];
+  if (!save.upg || typeof save.upg !== 'object') save.upg = {};
   if (!save.tut && (save.best > 0 || save.runs.length)) save.tut = 1; // existing players already know the controls
   if (TEST) { save.owned = UNICORNS.map(u => u.id); save.coins = Math.max(save.coins, 99999); save.maxWorld = WORLDS.length - 1; }
   T.world = Math.min(save.startWorld || 0, save.maxWorld || 0); menuW = T.world;
@@ -3853,10 +3876,33 @@ function refreshMenu() {
   $('mBest').textContent = fmt(save.best); $('mCoins').textContent = fmt(save.coins);
   $('menuName').textContent = cur().name;
   const mp = $('menuPor'); mp.src = portrait(cur().id); mp.alt = cur().name; mp.style.setProperty('--c1', hex(cur().mane[0])); mp.style.setProperty('--c2', hex(cur().mane[1]));
+  $('shopDot').hidden = !canAfford();
   const lbl = save.muted ? 'Sound off' : 'Sound on'; $('muteBtn').textContent = lbl; $('pMute').textContent = lbl;
+}
+let shopTab = 'uni';
+function canAfford() {
+  return UNICORNS.some(u => !save.owned.includes(u.id) && save.coins >= u.price) || UPGRADES.some(u => upLv(u.id) < UPG_COST.length && save.coins >= UPG_COST[upLv(u.id)]);
+}
+function renderUpgrades() {
+  $('upgList').innerHTML = '';
+  UPGRADES.forEach(u => {
+    const lv = upLv(u.id), max = lv >= UPG_COST.length, price = UPG_COST[lv];
+    const row = document.createElement('div'); row.className = 'upg';
+    const now = u.val(lv) + u.unit, nxt = max ? '' : ` → <b>${u.val(lv + 1)}${u.unit}</b>`;
+    row.innerHTML = `<span class="uic" style="background:${hex(u.color)}">${u.ic}</span><div><div class="un">${u.name}</div><div class="ud">${u.txt}: ${now}${nxt}</div></div>` +
+      `<div class="pips" style="grid-column:2">${UPG_COST.map((_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</div>`;
+    const b = document.createElement('button'); b.className = 'btn ' + (max ? 'mint' : 'gold');
+    b.textContent = max ? 'Max' : `Upgrade · ${fmt(price)}`; b.disabled = max || save.coins < price;
+    b.style.gridRow = '1 / span 2'; b.style.gridColumn = '3';
+    b.onclick = () => { if (max || save.coins < price) return; save.coins -= price; save.upg[u.id] = lv + 1; persist(); SFX.done(); toast(`${u.name} upgraded to level ${lv + 1}!`); renderShop(); refreshMenu(); };
+    row.appendChild(b); $('upgList').appendChild(row);
+  });
 }
 function renderShop() {
   $('sCoins').textContent = fmt(save.coins);
+  document.querySelectorAll('#shopTabs .tab').forEach(b => { const on = b.dataset.t === shopTab; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  $('shopGrid').hidden = shopTab !== 'uni'; $('upgList').hidden = shopTab !== 'upg';
+  renderUpgrades();
   const grid = $('shopGrid'); grid.innerHTML = '';
   UNICORNS.forEach(u => {
     const owned = save.owned.includes(u.id), sel = save.selected === u.id;
@@ -3888,6 +3934,7 @@ function renderMissions() {
 }
 const click = (id, f) => $(id).addEventListener('click', e => { AU.init(); f(e); });
 click('playBtn', startRun);
+document.querySelectorAll('#shopTabs .tab').forEach(b => b.addEventListener('click', () => { shopTab = b.dataset.t; renderShop(); }));
 click('shopBtn', () => { backTo = 'menu'; renderShop(); showScreen('shop'); });
 click('misBtn', () => { backTo = 'menu'; renderMissions(); showScreen('missions'); });
 click('oMis', () => { backTo = 'over'; renderMissions(); showScreen('missions'); });
@@ -3947,7 +3994,7 @@ function collect(it) {
     const n = G.power.double > 0 ? 2 : 1;
     G.stars += n; run.stars += n; G.score += 10 * n * mult * G.mult;
     G.touched.add(it.g); addMult(n);
-    G.boost = Math.min(1, G.boost + 0.022 * n);
+    G.boost = Math.min(1, G.boost + 0.022 * n * (1 + 0.15 * upLv('boost')));
     G.combo = G.comboT > 0 ? G.combo + 1 : 0; G.comboT = 0.6; SFX.star(G.combo);
     burst(it.mesh.position.x, it.mesh.position.y, it.mesh.position.z, 4, 2);
   } else if (it.type === 'coin') {
@@ -3957,7 +4004,7 @@ function collect(it) {
   } else {
     run.powerups++; SFX.power();
     if (it.type === 'shield') G.shield = true;
-    else G.power[it.type] = POWERS[it.type].dur * (it.type === 'magnet' && cur().id === 'rainbow' ? 2 : 1);
+    else G.power[it.type] = powerDur(it.type) * (it.type === 'magnet' && cur().id === 'rainbow' ? 2 : 1);
     burst(it.mesh.position.x, it.mesh.position.y, it.mesh.position.z, 12);
   }
 }

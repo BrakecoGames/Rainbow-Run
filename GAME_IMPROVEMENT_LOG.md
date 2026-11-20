@@ -59,3 +59,14 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8 | 7* | 8.5* | 8 | 6.5* | 6.5* | 6* | 8 | 7.5* | 7.5* |
 
+## Iteration 3 – Upgrades shop
+- **Problem:** coins had a single sink (6 unicorns); after buying them there was nothing to save up for, and no strategic choices between runs.
+- **Change:** the "Unicorns" menu button became **Shop** with two tabs: *Unicorns* and *Upgrades*. Four upgrades with 5 levels each (200 / 450 / 800 / 1,400 / 2,200 coins = 20,200 coins total): Magnet, 2x Stars and Superjump last +2 s per level; Magic boost charges +15 % faster per level. Level pips show progress, the button shows the next price. A yellow dot on the Shop button appears when something is affordable. Save gets `upg: {}` (old saves are migrated automatically).
+- **Files:** `rainbow-run.html`, `tests/functional.js`.
+- **Tests:** functional suite 41/41 (tabs, purchase + coin deduction, pip, dot on/off, upgraded magnet lasts 10 s, legacy save).
+- **Remaining:** coin income per run is low (≈5 coins per gold coin; a 1 km run gives ~25 coins), handled in iteration 4.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7* | 8.5* | 8 | 7.5 | 7* | 6* | 8 | 7.5* | 7.5* |
+
