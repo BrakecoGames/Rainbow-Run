@@ -167,3 +167,29 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 9 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9 | 9 | 8.5* |
 
+## Iteration 13 – Long-session stability (soak test)
+- **Goal:** check for leaks and slow-downs over a long session after all the changes (baking, queued toasts, new screens).
+- **Test:** `tests/soak.js` – 6 consecutive runs with the pro bot, 670 s of game time, real renders at each sample, back to menu at the end.
+- **Results:** GPU geometries 1,387 → 945 → 1,066 → 1,328 (follows how much decor is on screen, back to the start level in the menu = no geometry leak); textures constant at 34; JS heap constant at 68 MB; scene children bounded (326–390); obstacle and item arrays stay small (≤ 14 / 42). Runs reached 1.2–3.5 km. 0 JS errors.
+- **Change:** none needed (test only).
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 9 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9.5 | 9 | 8.5* |
+
+---
+
+## Stop – why the loop ends after 13 iterations
+The ten analysis points are fixed or measured. What is left needs things this sandbox cannot provide: real FPS on phones (to tune the low-detail thresholds), the live CrazyGames SDK (ads, `SDK.data` cloud save, QA tool) and player data (to tune coin prices and difficulty). More changes without those would add more risk than benefit.
+
+## Summary of improvements
+1. **First 30 seconds:** scripted tutorial (dodge, jump, roll) with hints and slow motion, forgiving tutorial crashes, a star line in the first second, a calmer first 250 m and roomy rows until the tutorial is done.
+2. **Progression and retention:** Upgrades shop (4 × 5 levels), distance bonus coins, game-over summary with coins earned and the next goal, world progress bar, mid-run "New record!", 7-day daily gift, close-call bonus + mission, daily challenges on the pause screen.
+3. **UX polish:** UTF-8/viewport metas, Escape/Space shortcuts, toast queue, stale chips fixed, revive hidden without an ad SDK, Shop dot when something is affordable.
+4. **Mobile:** landscape phone menu keeps Play on screen (was below the fold), compact pause/game-over/gift layouts.
+5. **Performance:** obstacles merged (2–9× fewer meshes), adaptive low detail on slow devices, no leaks over a 10-minute soak.
+6. **Safety:** v1.0.0 saves load unchanged (tested); new save fields get defaults; CrazyGames/Poki SDK wrappers untouched; builds rebuilt with `build.py`.
+
+**Final scores** (measured: UX, Progression, Stability, Mobile layout, First impression via tutorial/menu tests; `*` = estimate): First impression 9 · Gameplay 8* · Visual 8.5 · UX 9 · Progression 8.5 · Retention 8* · Performance 7* · Stability 9.5 · Mobile 9 · CrazyGames fit 8.5*.
+
+**Recommended next steps (need a human / real devices):** test on a mid-range Android phone and adjust the low-detail thresholds; run the CrazyGames QA Tool on `dist/rainbow-run-crazygames.zip`; bump `VERSION`/`BUILD_DATE` (e.g. 1.1.0) before release; check coin prices against real play data.
