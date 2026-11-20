@@ -81,3 +81,14 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8 | 7* | 8.5* | 8.5 | 8 | 7.5* | 6* | 8.5 | 7.5* | 8* |
 
+## Iteration 5 – In-run progress feedback
+- **Problem:** during a run there was no visible progress towards the next world and beating your record went unnoticed until game over.
+- **Change:** thin rainbow progress bar along the top edge shows progress through the current world; in the last 20 % a label "Enchanted Forest in 120 m" fades in. When the score passes the saved record a "New record! · Keep going" banner + jingle plays once per run.
+- **Files:** `rainbow-run.html`, `tests/functional.js`.
+- **Tests:** functional 49/49 (record banner, bar fills, next-world label near the end, save/reload).
+- **Remaining:** none.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7.5* | 8.5* | 8.5 | 8 | 7.5* | 6* | 8.5 | 7.5* | 8* |
+

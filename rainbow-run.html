@@ -228,6 +228,11 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 .goal .pv-bar{margin-top:4px}
 .goal .gp{font-size:12px;color:var(--muted);font-weight:800;font-variant-numeric:tabular-nums}
 @media (max-height:560px){#over .panel{gap:8px;padding:14px 18px}#over .stat{padding:4px 10px;min-width:76px}#over .stat b{font-size:20px}#over h2{font-size:24px}}
+#wprog{position:fixed;left:0;right:0;top:0;height:6px;background:rgba(40,10,80,.35)}
+#wprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5f9f,#ffd23f,#3fe0c5,#4fb3ff);box-shadow:0 0 8px rgba(255,255,255,.7)}
+#wprog span{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:8px;font-family:var(--display);font-size:13px;opacity:0;transition:opacity .4s;
+  text-shadow:0 2px 0 rgba(60,20,90,.6);white-space:nowrap}
+#wprog.near span{opacity:1}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
 /* Tutorial hint */
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
@@ -244,6 +249,7 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 <canvas id="cv"></canvas>
 
 <div id="hud" hidden>
+  <div id="wprog" aria-hidden="true"><i id="wprogF"></i><span id="wprogL"></span></div>
   <div class="hud-top">
     <button class="roundbtn" id="pauseBtn" aria-label="Menu"><span class="pz"></span>Menu</button>
     <div class="midcol">
@@ -3577,7 +3583,7 @@ function startRun() {
   clearAll();
   Object.assign(G, { mode: 'play', d: 0, speed: 14, lane: 1, x: 0, y: 0, vy: 0, rollT: 0, queueRoll: false, score: 0, stars: 0, coins: 0, combo: 0,
     mult: 1, chain: 0, maxMult: 1, touched: new Set(), entry: null,
-    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0, tutN: save.tut ? TUT.length : 0, coins0: save.coins, paidD: 0, distBonus: 0 });
+    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0, tutN: save.tut ? TUT.length : 0, coins0: save.coins, paidD: 0, distBonus: 0, recShown: false });
   run = zeroStats();
   run.unicorns = [save.selected];
   setUnicorn(save.selected);
@@ -4005,6 +4011,11 @@ function updateHud() {
   setText('score', fmt(G.score)); setText('dist', fmt(G.d) + ' m');
   setText('hStars', fmt(G.stars)); setText('hCoins', fmt(G.coins));
   setText('mult', 'x' + G.mult);
+  { const p = ((Math.max(0, G.d) + T.world * WORLD_LEN) % WORLD_LEN) / WORLD_LEN, pw = (p * 100).toFixed(1) + '%';
+    if (hudCache.wp !== pw) { hudCache.wp = pw; $('wprogF').style.width = pw; }
+    const left = Math.ceil((1 - p) * WORLD_LEN), nw = WORLDS[(G.world + 1) % WORLDS.length].name;
+    const near = p > 0.8 && !(TEST && T.lock); $('wprog').classList.toggle('near', near);
+    if (near) setText('wprogL', `${nw} in ${fmt(left)} m`); }
   const mw = (G.mult >= MULT_MAX ? 100 : Math.min(100, G.chain / multNeed(G.mult) * 100)).toFixed(0) + '%';
   if (hudCache.mw !== mw) { hudCache.mw = mw; $('multFill').style.width = mw; }
   $('boostFill').style.width = (G.boostT > 0 ? 100 : G.boost * 100) + '%';
@@ -4085,6 +4096,7 @@ function frame(now, once) {
     if (pidx > save.maxWorld) { save.maxWorld = pidx; persist(); toast(`New world unlocked: ${WORLDS[pidx].name}!`); SFX.done(); }
     while (G.nextRow < G.d + 115) { spawnRow(G.nextRow); G.nextRow += rowGap(); }
     G.liveCheck -= dt; if (G.liveCheck <= 0) { G.liveCheck = 0.5; checkMissions(true); }
+    if (!G.recShown && save.best > 0 && G.score > save.best) { G.recShown = true; showBanner('New record!', 'Keep going'); SFX.done(); }
     gtex.offset.y += sp * dt / 12;
   } else if (G.mode === 'menu') {
     G.d += 7 * dt; gtex.offset.y += 7 * dt / 12;

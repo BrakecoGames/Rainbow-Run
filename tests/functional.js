@@ -65,6 +65,14 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   ok(best > 0, 'record saved after run');
   ok(await ev(() => JSON.parse(localStorage.getItem('rainbowrun_v1')).best) === best, 'save written to localStorage');
   ok(await ev(() => __rr.save.runs.length === 1), 'run recorded on scoreboard');
+  // mid-run record banner
+  await ev(() => document.activeElement.blur()); await page.waitForTimeout(800); await page.keyboard.press('Space');
+  await ev(() => { __rr.G.invT = 99; __rr.G.score = __rr.save.best + 1; }); await s.step(40, 'pro');
+  ok(await ev(() => __rr.G.recShown && /New record/.test(document.getElementById('banner').textContent)), 'New record banner during the run');
+  ok(await ev(() => parseFloat(document.getElementById('wprogF').style.width) > 0), 'world progress bar fills');
+  await ev(() => { __rr.G.d = 650; }); await s.step(2, 'pro');
+  ok(await ev(() => /Enchanted Forest in \d+ m/.test(document.getElementById('wprogL').textContent) && document.getElementById('wprog').classList.contains('near')), 'next world label near the end');
+  await ev(() => { __rr.G.invT = 0; }); await s.run(300, 'idle'); await s.step(200);
   // space restarts after a short delay
   await ev(() => document.activeElement.blur()); await page.waitForTimeout(800); await page.keyboard.press('Space');
   ok(await ev(() => __rr.G.mode === 'play'), 'Space on game-over plays again');
@@ -72,11 +80,11 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   // quit from pause
   await page.keyboard.press('p'); await page.click('#quitBtn');
   ok(await ev(() => __rr.G.mode === 'menu'), 'Quit returns to menu');
-  ok(await ev(() => __rr.save.runs.length === 2), 'quit run recorded');
+  ok(await ev(() => __rr.save.runs.length === 3), 'quit run recorded');
   // reload keeps progress
-  const coins = await ev(() => __rr.save.coins);
+  const coins = await ev(() => __rr.save.coins), best2 = await ev(() => __rr.save.best);
   await page.reload(); await page.waitForFunction(() => window.__rr && !document.getElementById('menu').hidden, null, { timeout: 60000 });
-  ok(await ev(() => __rr.save.best) === best && await ev(() => __rr.save.coins) === coins, 'progress survives reload');
+  ok(await ev(() => __rr.save.best) === best2 && await ev(() => __rr.save.coins) === coins, 'progress survives reload');
   // legacy save loads (v1.0.0 format)
   await ev(() => { localStorage.setItem('rainbowrun_v1', JSON.stringify({ coins: 777, owned: ['sparkle', 'golden'], selected: 'golden', best: 4321, muted: false, life: { stars: 10, coins: 1, jumps: 2, rolls: 3, powerups: 0, boosts: 0, dist: 900, score: 4321, unicorns: ['sparkle'] }, mlevel: { stars: 0 }, daily: null, maxWorld: 1, startWorld: 1, runs: [] })); });
   await page.reload(); await page.waitForFunction(() => window.__rr && !document.getElementById('menu').hidden, null, { timeout: 60000 });
