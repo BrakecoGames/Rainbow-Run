@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Rainbow Run Test</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
@@ -3668,6 +3669,11 @@ window.addEventListener('keydown', e => {
   if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(k)) e.preventDefault();
   if (CG.adBusy) return; // no input while an ad is playing
   if (G.mode === 'menu' && (k === 'Enter' || k === ' ') && !$('menu').hidden && document.activeElement === document.body) { startRun(); return; }
+  if (k === 'Escape' && G.mode !== 'play' && G.mode !== 'pause') {
+    const sub = ['shop', 'missions', 'scores'].find(id => !$(id).hidden);
+    if (sub) { if (backTo === 'menu') refreshMenu(); showScreen(backTo); }
+    return;
+  }
   if (k === 'p' || k === 'P' || k === 'Escape') { G.mode === 'play' ? pauseGame() : resumeGame(); return; }
   if (TEST && G.mode === 'play' && k >= '1' && k <= String(WORLDS.length)) { T.world = +k - 1; T.lock = true; return; }
   if (e.repeat) return;

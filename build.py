@@ -63,7 +63,7 @@ def split(s):
     i = s.index('<canvas id="cv">')
     head, body = s[:i], s[i:]
     assert body.count(CDN) == 1
-    return head.replace('<title>Rainbow Run</title>', ''), body.replace(CDN, '<script src="three.min.js"></script>')
+    return head.replace('<meta charset="utf-8">\n', '', 1).replace('<title>Rainbow Run</title>', ''), body.replace(CDN, '<script src="three.min.js"></script>')
 
 
 def package(folder, zipname):
