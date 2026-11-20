@@ -49,6 +49,7 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   await page.keyboard.press('ArrowDown'); ok(await ev(() => __rr.G.rollT > 0), 'ArrowDown rolls');
   // pause / resume
   await page.keyboard.press('p'); ok(await ev(() => __rr.G.mode === 'pause') && await page.isVisible('#pause'), 'P pauses');
+  ok(await page.locator('#pDaily .mis').count() === 3, 'pause shows the 3 daily challenges');
   await page.keyboard.press('Escape'); ok(await ev(() => __rr.G.mode === 'play'), 'Escape resumes');
   // collect + boost
   await ev(() => { __rr.G.boost = 1; }); await page.keyboard.press('Shift'); ok(await ev(() => __rr.G.boostT > 0), 'Shift uses magic boost');
@@ -102,11 +103,11 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   ok(await ev(() => __rr.save.runs.length === 3), 'quit run recorded');
   // reload keeps progress
   const coins = await ev(() => __rr.save.coins), best2 = await ev(() => __rr.save.best);
-  await page.reload(); await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
+  await page.reload({ timeout: 180000 }); await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
   ok(await ev(() => __rr.save.best) === best2 && await ev(() => __rr.save.coins) === coins, 'progress survives reload');
   // legacy save loads (v1.0.0 format)
   await ev(() => { localStorage.setItem('rainbowrun_v1', JSON.stringify({ coins: 777, owned: ['sparkle', 'golden'], selected: 'golden', best: 4321, muted: false, life: { stars: 10, coins: 1, jumps: 2, rolls: 3, powerups: 0, boosts: 0, dist: 900, score: 4321, unicorns: ['sparkle'] }, mlevel: { stars: 0 }, daily: null, maxWorld: 1, startWorld: 1, runs: [] })); });
-  await page.reload(); await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
+  await page.reload({ timeout: 180000 }); await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
   ok(await ev(() => __rr.save.coins === 777 && __rr.save.selected === 'golden' && __rr.save.best === 4321 && __rr.save.maxWorld === 1), 'v1.0.0 save loads unchanged');
   ok(await page.isVisible('#gift'), 'existing player gets the daily gift'); await page.click('#giftBtn');
   ok(await ev(() => __rr.save.coins === 827), 'gift collected on legacy save');

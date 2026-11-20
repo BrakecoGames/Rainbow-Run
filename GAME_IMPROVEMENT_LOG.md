@@ -136,3 +136,13 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8.5 | 8* | 8.5 | 9 | 8 | 8* | 7* | 9 | 8* | 8.5* |
 
+## Iteration 10 – Daily challenges on the pause screen
+- **Problem:** the pause screen was empty (Resume / Sound / Quit); players had to quit a run to see how close they were to today's challenges.
+- **Change:** the pause panel lists today's three challenges with live progress bars (shared `renderDaily()` with the Missions screen; compact on short landscape screens).
+- **Files:** `rainbow-run.html`, `tests/functional.js`.
+- **Tests:** functional 56/56 (pause shows 3 challenges).
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8.5 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9 | 8* | 8.5* |
+

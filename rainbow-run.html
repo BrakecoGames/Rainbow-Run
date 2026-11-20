@@ -247,6 +247,7 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 #hud:not([hidden]) ~ #toasts{top:calc(env(safe-area-inset-top,0px) + 168px);gap:6px}
 #hud:not([hidden]) ~ #toasts .toast{font-size:14px;padding:6px 12px;border-radius:12px;opacity:.95}
 @media (max-height:500px){#hud:not([hidden]) ~ #toasts{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}}
+@media (max-height:500px){#pause .mis{padding:6px 10px}#pause .mis .p{display:none}}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
 /* Tutorial hint */
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
@@ -375,6 +376,8 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
   <div class="panel">
     <h2>Paused</h2>
     <div class="row"><button class="btn big" id="resumeBtn">Resume</button></div>
+    <h3>Today's challenges</h3>
+    <div class="mlist" id="pDaily"></div>
     <div class="row"><button class="btn alt" id="pMute">Sound on</button><button class="btn alt" id="quitBtn">Quit</button></div>
   </div>
 </section>
@@ -3821,7 +3824,7 @@ function toMenu() {
   snapWorld(WORLDS[G.world]); lastInteract = Date.now();
   $('hud').hidden = true; clearChips(); refreshMenu(); showScreen('menu'); showGift();
 }
-function pauseGame() { if (G.mode !== 'play') return; G.mode = 'pause'; CG.stop(); showScreen('pause'); }
+function pauseGame() { if (G.mode !== 'play') return; G.mode = 'pause'; CG.stop(); renderDaily('pDaily'); showScreen('pause'); }
 function resumeGame() { if (G.mode !== 'pause') return; G.mode = 'play'; CG.start(); showScreen(null); if (document.activeElement) document.activeElement.blur(); }
 
 /* ================= Actions ================= */
@@ -4031,9 +4034,12 @@ function misRow(text, val, goal, reward, done) {
   const pct = Math.min(100, val / goal * 100);
   return `<div class="mis${done ? ' done' : ''}"><div class="t">${text}</div><div class="r"><i class="ico coin"></i>${done ? 'Done' : '+' + reward}</div><div class="bar"><i style="width:${done ? 100 : pct}%"></i></div><div class="p">${fmt(Math.min(val, goal))} / ${fmt(goal)}</div></div>`;
 }
+function renderDaily(el) {
+  $(el).innerHTML = save.daily.ids.map(id => { const m = MISSIONS.find(q => q.id === id); return misRow(m.txt(m.daily), statValue(m, 'daily'), m.daily, DAILY_REWARD, save.daily.done.includes(id)); }).join('');
+}
 function renderMissions() {
   ensureDaily();
-  $('dailyList').innerHTML = save.daily.ids.map(id => { const m = MISSIONS.find(q => q.id === id); return misRow(m.txt(m.daily), statValue(m, 'daily'), m.daily, DAILY_REWARD, save.daily.done.includes(id)); }).join('');
+  renderDaily('dailyList');
   $('misList').innerHTML = MISSIONS.map(m => {
     const lv = save.mlevel[m.id] || 0;
     if (lv >= m.goals.length) return misRow(m.txt(m.goals[m.goals.length - 1]) + ' · all done', 1, 1, 0, true);
