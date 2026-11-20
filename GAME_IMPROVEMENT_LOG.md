@@ -35,3 +35,27 @@
 **Baseline measurements:** boot ≈ 26 s under SwiftShader (8 world thumbnails rendered at boot); idle player dies at 98 m / 10 s; novice bot 140–540 m; pro bot 1–8 km. No JS errors.
 
 ---
+## Iteration 1 – Quick UX/QA fixes
+- **Problem:** source and test build had no `<meta charset>` (arrow keys rendered as `â†`); Escape did not leave Unicorns/Missions/Scores; no keyboard way to restart after a crash.
+- **Change:** added `<meta charset="utf-8">` (stripped again by `build.py` so platform builds keep a single charset tag); Escape closes sub-menus; Space/Enter on the game-over screen = Play again (0.7 s guard so a held jump key cannot skip the results; hint hidden on touch devices).
+- **Files:** `rainbow-run.html`, `build.py`, `tests/*` (new).
+- **Tests:** `tests/functional.js` 30/30 pass; build script OK.
+- **Remaining:** none.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 6.5* | 7* | 8.5* | 7 | 6.5* | 6* | 6* | 8 | 7* | 7* |
+
+`*` = expert estimate; others are backed by automated tests (stability: 0 JS errors across all suites; UX: menu/keyboard flows tested).
+
+## Iteration 2 – First-run tutorial
+- **Problem:** a new player got no in-run guidance; the first obstacle comes after ~3 s and an idle player crashed at 98 m within 10 s.
+- **Change:** for a fresh save the first three rows are scripted (dodge → jump → roll). A hint pill ("Swipe up to jump" / "Press ↑ or Space to jump", touch/keyboard aware) appears, and time slows to 22 % in the last 7.5 m until the player performs the action. A crash on a tutorial obstacle is forgiven. A 6-star line at the start gives a reward within ~1 s, a star line rewards the first dodge. After the tutorial: toast + jingle, `save.tut = 1`. The first 250 m have fewer double rows (12 % instead of 30 %). Existing saves with progress skip the tutorial (migration).
+- **Files:** `rainbow-run.html`, `tests/tutorial.js` (new).
+- **Tests:** `tests/tutorial.js` 16/16 (hint shown, slow motion, each action passes, flag saved, no tutorial on run 2, idle new player survives the tutorial); `functional.js` 30/30 incl. legacy-save check.
+- **Remaining:** hint copy is English only (as is the whole game).
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7* | 8.5* | 8 | 6.5* | 6.5* | 6* | 8 | 7.5* | 7.5* |
+

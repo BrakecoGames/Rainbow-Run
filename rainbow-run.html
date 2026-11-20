@@ -212,8 +212,16 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 .lb .dt{font-size:12px;color:var(--muted);text-align:right;grid-row:span 2}
 .lb .in{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
+/* Tutorial hint */
+#hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
+  background:rgba(40,12,80,.72);border:3px solid #fff;border-radius:999px;padding:8px 22px 8px 12px;font-family:var(--display);font-size:clamp(20px,4.6vw,28px);
+  white-space:nowrap;pointer-events:none;box-shadow:0 6px 0 rgba(60,20,110,.4);animation:tin .25s ease-out}
+#hint .ar{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--sun);color:#3a2600;font-size:28px;line-height:1;animation:nudge .7s ease-in-out infinite alternate}
+#hint .ar.x{animation-name:nudgex}
+@keyframes nudge{to{transform:translateY(var(--ny,-6px))}}
+@keyframes nudgex{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
 @media (hover:none) and (pointer:coarse){#againKey{display:none}}
-@media (prefers-reduced-motion:reduce){#boostBtn.ready{animation:none}.toast{animation:none}.multbox.pop,.multbox.lost{animation:none}}
+@media (prefers-reduced-motion:reduce){#hint .ar{animation:none}#boostBtn.ready{animation:none}.toast{animation:none}.multbox.pop,.multbox.lost{animation:none}}
 </style>
 
 <canvas id="cv"></canvas>
@@ -235,6 +243,7 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 </div>
 <div id="chips"></div>
 <div id="banner"></div>
+<div id="hint" hidden><span class="ar" id="hintAr"></span><span id="hintTx"></span></div>
 <div id="toasts"></div>
 
 <section class="screen" id="menu" hidden>
@@ -483,7 +492,7 @@ const DAILY_REWARD = 150;
 /* ================= Save ================= */
 const SAVE_KEY = TEST ? 'rainbowrun_test' : 'rainbowrun_v1';
 const zeroStats = () => ({ stars: 0, coins: 0, jumps: 0, rolls: 0, powerups: 0, boosts: 0, dist: 0, score: 0, unicorns: [] });
-const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [] });
+const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [], tut: 0 });
 let save = defaultSave();
 function showVersion() {
   const d = new Date(BUILD_DATE + 'T12:00:00');
@@ -496,6 +505,7 @@ function loadSave() {
   save = Object.assign(defaultSave(), s || {});
   save.life = Object.assign(zeroStats(), save.life || {});
   if (!Array.isArray(save.runs)) save.runs = [];
+  if (!save.tut && (save.best > 0 || save.runs.length)) save.tut = 1; // existing players already know the controls
   if (TEST) { save.owned = UNICORNS.map(u => u.id); save.coins = Math.max(save.coins, 99999); save.maxWorld = WORLDS.length - 1; }
   T.world = Math.min(save.startWorld || 0, save.maxWorld || 0); menuW = T.world;
   ensureDaily();
@@ -3462,8 +3472,32 @@ function renderScores() {
   $('lbNote').textContent = CG.lbOn() ? 'Your scores also go to the CrazyGames weekly leaderboard.' : 'Your best runs are saved with your game progress.';
 }
 function openScores(from, mark) { backTo = from; lbMark = mark || null; renderScores(); showScreen('scores'); }
+/* ---------- first-run tutorial: three scripted rows, time slows down until the player reacts ---------- */
+const TUT = [
+  { kind: 'full', key: 'lane', ar: '⇆', touch: 'Swipe left or right', keys: 'Press ← or → to dodge' },
+  { kind: 'low', key: 'jump', ar: '↑', touch: 'Swipe up to jump', keys: 'Press ↑ or Space to jump' },
+  { kind: 'high', key: 'roll', ar: '↓', touch: 'Swipe down to roll', keys: 'Press ↓ to roll under' }
+];
+let touchUser = !!(window.matchMedia && matchMedia('(hover:none) and (pointer:coarse)').matches);
+function tutRow(s, w) {
+  const step = TUT[G.tutN], defs = OBS[w].filter(d => d.kind === step.kind && !d.move && !d.fall);
+  const lanes = step.kind === 'full' ? [G.lane] : [0, 1, 2];
+  for (const L of lanes) { addObstacle(pick(defs), L, s); const o = obstacles[obstacles.length - 1]; o.tut = step; }
+  if (step.kind === 'full') for (let i = 0; i < 4; i++) addItem('star', LANES[G.lane === 1 ? 0 : 1], 0.9, s - 4 + i * 1.8);
+  G.tutN++;
+}
+function tutState() {
+  // the closest tutorial obstacle ahead decides the hint and the slow motion
+  let o = null;
+  for (const q of obstacles) if (q.tut && !q.passed && !q.dead && (!o || q.s < o.s)) o = q;
+  if (!o) return null;
+  const z = G.d - o.s, st = o.tut;
+  const done = st.key === 'lane' ? Math.abs(G.x - o.x) > 1.25 : st.key === 'jump' ? G.y > 0.25 : G.rollT > 0;
+  return { st, z, done, slow: !done && z > -7.5 && z < 0 };
+}
 function spawnRow(s) {
   const w = worldAt(s), defs = OBS[w];
+  if (G.tutN < TUT.length) { tutRow(s, w); return; }
   const diff = Math.min(1, G.d / 3500);
   const gap = rowGap();
   const order = [0, 1, 2].sort(() => Math.random() - 0.5);
@@ -3477,7 +3511,7 @@ function spawnRow(s) {
   const icePatch = defs.find(d => d.kind === 'ice');
   if (icePatch && Math.random() < 0.4) addObstacle(icePatch, pick([0, 1, 2]), s + gap * 0.5);
   const passable = normal.filter(d => d.kind !== 'full');
-  let n = Math.random() < 0.3 + diff * 0.45 ? 2 : 1;
+  let n = Math.random() < (s < 250 ? 0.12 : 0.3 + diff * 0.45) ? 2 : 1;
   const triple = G.d > 600 && Math.random() < 0.08 + diff * 0.12;
   if (triple) {
     for (const L of [0, 1, 2]) addObstacle(pick(passable), L, s);
@@ -3501,7 +3535,7 @@ function spawnRow(s) {
   if (pr < 0.06 && G.d > 150) addItem(pick(Object.keys(POWERS)), LANES[free], 1.1, s + gap * 0.5);
   else if (pr < 0.2) addItem('coin', LANES[pick([0, 1, 2])], 1.0, s + gap * 0.5);
 }
-function rowGap() { return Math.max(11, G.speed * 0.82 + 2); }
+function rowGap() { return G.tutN < TUT.length ? 34 : Math.max(11, G.speed * 0.82 + 2); }
 
 /* ================= Run control ================= */
 function startRun() {
@@ -3511,7 +3545,7 @@ function startRun() {
   clearAll();
   Object.assign(G, { mode: 'play', d: 0, speed: 14, lane: 1, x: 0, y: 0, vy: 0, rollT: 0, queueRoll: false, score: 0, stars: 0, coins: 0, combo: 0,
     mult: 1, chain: 0, maxMult: 1, touched: new Set(), entry: null,
-    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0 });
+    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0, tutN: save.tut ? TUT.length : 0 });
   run = zeroStats();
   run.unicorns = [save.selected];
   setUnicorn(save.selected);
@@ -3520,7 +3554,28 @@ function startRun() {
   showScreen(null); $('hud').hidden = false; resetMultHud();
   if (document.activeElement) document.activeElement.blur();
   showBanner(WORLDS[G.world].name, 'World ' + (G.world + 1));
+  for (let i = 0; i < 6; i++) addItem('star', LANES[1], 0.9, 14 + i * 1.8); // an easy first reward
+  setHint(null);
   CG.start();
+}
+let hintKey = null;
+function setHint(st) {
+  const k = st ? st.key + touchUser : null;
+  if (k === hintKey) return; hintKey = k;
+  const h = $('hint'); h.hidden = !st; if (!st) return;
+  $('hintAr').textContent = st.ar; $('hintAr').className = 'ar' + (st.key === 'lane' ? ' x' : '');
+  $('hintAr').style.setProperty('--ny', st.key === 'roll' ? '6px' : '-6px');
+  $('hintTx').textContent = touchUser ? st.touch : st.keys;
+}
+function tutTick() {
+  if (G.tutN === undefined) return 1;
+  const ts = tutState();
+  if (!ts) {
+    if (G.tutN >= TUT.length && !save.tut && G.mode === 'play') { save.tut = 1; persist(); setHint(null); toast('Great job! Now run as far as you can!'); SFX.done(); }
+    setHint(null); return 1;
+  }
+  setHint(ts.z > -26 && !ts.done ? ts.st : null);
+  return ts.slow ? 0.22 : 1;
 }
 function commitRun() {
   const add = (dst) => {
@@ -3668,7 +3723,7 @@ function useBoost() {
 /* ================= Input ================= */
 window.addEventListener('wheel', e => { if (!(e.target.closest && e.target.closest('.panel, #menu'))) e.preventDefault(); }, { passive: false });
 window.addEventListener('keydown', e => {
-  const k = e.key;
+  const k = e.key; if (k.startsWith('Arrow') || k === ' ') touchUser = false;
   if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(k)) e.preventDefault();
   if (CG.adBusy) return; // no input while an ad is playing
   if (G.mode === 'menu' && (k === 'Enter' || k === ' ') && !$('menu').hidden && document.activeElement === document.body) { startRun(); return; }
@@ -3688,7 +3743,7 @@ window.addEventListener('keydown', e => {
   else if (k === 'Shift' || k === 'e' || k === 'E' || k === 'b' || k === 'B') useBoost();
 });
 let ts = null;
-window.addEventListener('touchstart', e => { if (e.target.closest('button')) return; const t = e.changedTouches[0]; ts = { x: t.clientX, y: t.clientY, done: false }; }, { passive: true });
+window.addEventListener('touchstart', e => { touchUser = true; if (e.target.closest('button')) return; const t = e.changedTouches[0]; ts = { x: t.clientX, y: t.clientY, done: false }; }, { passive: true });
 window.addEventListener('touchmove', e => {
   if (!ts || ts.done) return; const t = e.changedTouches[0]; const dx = t.clientX - ts.x, dy = t.clientY - ts.y;
   if (Math.max(Math.abs(dx), Math.abs(dy)) < 28) return;
@@ -3878,6 +3933,7 @@ function updateHud() {
 /* ================= Loop ================= */
 function knock(o) { o.dead = true; o.vy = 9; o.vx = rand(-7, 7); o.t = 0; burst(o.x, 1, G.d - o.s, 10); }
 function crash(o) {
+  if (o.tut) { knock(o); G.invT = 0.8; toast('Almost! Try again next time.'); return; }
   if (G.boostT > 0 || G.invT > 0) { knock(o); return; }
   loseMult();
   if (TEST && T.god) { knock(o); return; }
@@ -3912,8 +3968,10 @@ const bendTmp = { x: 0, y: 0 };
 let last = performance.now(), t = 0;
 function frame(now, once) {
   if (!once) qualityTick((now - last) / 1000);
-  const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+  let dt = Math.min(0.05, (now - last) / 1000); last = now;
   const playing = G.mode === 'play';
+  if (playing) dt *= tutTick(); else if (hintKey) setHint(null);
+  t += dt;
 
   // ---- movement ----
   if (playing) {
