@@ -157,3 +157,13 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 9 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9 | 8.5 | 8.5* |
 
+## Iteration 12 – Phone layouts for the new screens
+- **Problem (screenshots 844×390):** pause screen pushed *Sound / Quit* below the fold under the challenge list; the game-over panel overflowed (396 px content in 350 px) so *Menu / Shop / Missions / Scores* needed scrolling. Daily-gift day labels were cramped on 390 px wide phones.
+- **Change:** Sound/Quit moved directly under Resume; extra-compact game-over styles for screens ≤ 440 px high (smaller stats/buttons, next-goal detail line hidden); smaller day labels on narrow screens.
+- **Files:** `rainbow-run.html`, `tests/uishots.js` (new).
+- **Tests:** game-over panel scrollHeight = clientHeight at 844×390 (292/292) and 390×844; screenshots reviewed for pause, game over, gift, upgrades in portrait and landscape; functional / tutorial / gift suites pass.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 9 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9 | 9 | 8.5* |
+

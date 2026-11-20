@@ -260,6 +260,10 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 .goal .pv-bar{margin-top:4px}
 .goal .gp{font-size:12px;color:var(--muted);font-weight:800;font-variant-numeric:tabular-nums}
 @media (max-height:560px){#over .panel{gap:8px;padding:14px 18px}#over .stat{padding:4px 10px;min-width:76px}#over .stat b{font-size:20px}#over h2{font-size:24px}}
+@media (max-height:440px){#over .panel{gap:6px;padding:10px 16px}#over h2{font-size:22px}.newrec,.orank{font-size:17px;margin:-4px 0 0}
+  #over .stat b{font-size:17px}#over .stat span{font-size:10px}.earn{font-size:20px}.goal{padding:5px 12px}.goal .gp{display:none}
+  #over .btn.big{font-size:22px;padding:7px 30px}#over .row .btn:not(.big){font-size:15px;padding:6px 12px}#over .row{gap:6px}}
+@media (max-width:420px){.day small{font-size:9px;letter-spacing:0}.days{gap:4px}}
 #wprog{position:fixed;left:0;right:0;top:0;height:6px;background:rgba(40,10,80,.35)}
 #wprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5f9f,#ffd23f,#3fe0c5,#4fb3ff);box-shadow:0 0 8px rgba(255,255,255,.7)}
 #wprog span{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:8px;font-family:var(--display);font-size:13px;opacity:0;transition:opacity .4s;
@@ -410,9 +414,9 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
   <div class="panel">
     <h2>Paused</h2>
     <div class="row"><button class="btn big" id="resumeBtn">Resume</button></div>
+    <div class="row"><button class="btn alt" id="pMute">Sound on</button><button class="btn alt" id="quitBtn">Quit</button></div>
     <h3>Today's challenges</h3>
     <div class="mlist" id="pDaily"></div>
-    <div class="row"><button class="btn alt" id="pMute">Sound on</button><button class="btn alt" id="quitBtn">Quit</button></div>
   </div>
 </section>
 
