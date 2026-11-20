@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Rainbow Run Test</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
@@ -176,6 +177,32 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
   .hero-info > b{font-size:22px}
   .menu-panel .btn.big{font-size:24px;padding:12px 30px}
 }
+/* phones in landscape: keep the two-column menu so Play is visible without scrolling */
+@media (max-height:560px) and (min-width:600px){
+  #menu{display:flex;overflow:hidden;background:linear-gradient(90deg,rgba(50,15,100,.55) 0,rgba(50,15,100,.12) 45%,rgba(0,0,0,0) 65%)}
+  .menu-grid{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);gap:12px;height:100%;min-height:0}
+  .menu-side{order:0;justify-content:space-between;gap:6px}
+  .menu-panel{max-height:100%;overflow-y:auto;align-self:center;padding:10px 14px;gap:7px;border-radius:20px}
+  .menu-panel .logo .big{font-size:30px}
+  .menu-panel .logo .sub{font-size:12px;margin-top:5px}
+  .hero-row{gap:10px}
+  .hero-row .por.hero{width:58px;height:58px}
+  .hero-info{gap:3px}
+  .hero-info > b{font-size:18px}
+  .hero-info .stat{padding:2px 8px;min-width:62px}
+  .hero-info .stat b{font-size:17px}
+  .hero-info .stat span{font-size:10px}
+  .menu-panel .btn.big{font-size:22px;padding:7px 24px}
+  .startin{font-size:12px;margin-top:-3px}
+  .menu-panel .row{gap:6px}
+  .menu-panel .row .btn{font-size:15px;padding:7px 11px;box-shadow:0 4px 0 #4f2bc2}
+  .menu-panel > .keys{display:none}
+  .pv-cap{align-self:flex-end;max-width:340px;padding:8px 12px}
+  .pv-name{text-align:right;font-size:26px}
+  .pv-blurb{display:none}
+  .world-strip > .wcard:first-child{margin-left:auto}
+  .wcard{width:112px}
+}
 .newrec{font-family:var(--display);color:var(--sun);text-align:center;font-size:22px}
 /* Multiplier */
 .midcol{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
@@ -211,13 +238,60 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 .lb .sc{font-family:var(--display);font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
 .lb .dt{font-size:12px;color:var(--muted);text-align:right;grid-row:span 2}
 .lb .in{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.btn{position:relative}
+.dot{position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 2px 0 rgba(90,30,150,.4)}
+.upg{background:rgba(255,255,255,.2);border-radius:16px;padding:10px 12px;display:grid;grid-template-columns:48px 1fr auto;gap:4px 12px;align-items:center}
+.upg .uic{grid-row:span 2;width:48px;height:48px;border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-family:var(--display);font-size:22px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.upg .un{font-family:var(--display);font-size:19px;line-height:1.1}
+.upg .ud{font-size:13px;color:var(--muted);font-weight:800}
+.upg .pips{display:flex;gap:4px;margin-top:2px}
+.upg .pips i{width:18px;height:8px;border-radius:99px;background:rgba(60,20,110,.35)}
+.upg .pips i.on{background:var(--sun)}
+.upg .btn{grid-row:span 2;font-size:16px;padding:8px 14px;white-space:nowrap}
+.earn{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-size:24px;color:#fff27a;text-shadow:0 2px 0 rgba(120,30,140,.45)}
+.earn span{font-family:var(--body);font-weight:800;font-size:13px;color:var(--muted);text-shadow:none}
+.goal{background:rgba(255,255,255,.2);border-radius:14px;padding:8px 14px;display:flex;flex-direction:column;gap:2px}
+.goal b{font-weight:900;font-size:15px}
+.goal .pv-bar{margin-top:4px}
+.goal .gp{font-size:12px;color:var(--muted);font-weight:800;font-variant-numeric:tabular-nums}
+@media (max-height:560px){#over .panel{gap:8px;padding:14px 18px}#over .stat{padding:4px 10px;min-width:76px}#over .stat b{font-size:20px}#over h2{font-size:24px}}
+#wprog{position:fixed;left:0;right:0;top:0;height:6px;background:rgba(40,10,80,.35)}
+#wprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5f9f,#ffd23f,#3fe0c5,#4fb3ff);box-shadow:0 0 8px rgba(255,255,255,.7)}
+#wprog span{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:8px;font-family:var(--display);font-size:13px;opacity:0;transition:opacity .4s;
+  text-shadow:0 2px 0 rgba(60,20,90,.6);white-space:nowrap}
+#wprog.near span{opacity:1}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{background:rgba(255,255,255,.2);border-radius:12px;padding:6px 2px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;border:3px solid transparent}
+.day small{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.day b{font-family:var(--display);font-weight:400;font-size:16px;font-variant-numeric:tabular-nums}
+.day.got{opacity:.55}
+.day.now{border-color:var(--sun);background:rgba(255,230,90,.35);animation:mpop 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.day.now{animation:none}}
+#closeMsg{position:fixed;left:50%;top:44%;transform:translate(-50%,0);font-family:var(--display);font-size:clamp(22px,4.5vw,32px);color:#fff27a;
+  text-shadow:0 3px 0 rgba(60,20,90,.7);pointer-events:none;opacity:0;white-space:nowrap}
+#closeMsg.show{animation:ccpop .9s ease-out}
+@keyframes ccpop{0%{opacity:0;transform:translate(-50%,10px) scale(.7)}15%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-14px) scale(1)}100%{opacity:0;transform:translate(-50%,-26px)}}
+#hud:not([hidden]) ~ #toasts{top:calc(env(safe-area-inset-top,0px) + 168px);gap:6px}
+#hud:not([hidden]) ~ #toasts .toast{font-size:14px;padding:6px 12px;border-radius:12px;opacity:.95}
+@media (max-height:500px){#hud:not([hidden]) ~ #toasts{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}}
+@media (max-height:500px){#pause .mis{padding:6px 10px}#pause .mis .p{display:none}}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
-@media (prefers-reduced-motion:reduce){#boostBtn.ready{animation:none}.toast{animation:none}.multbox.pop,.multbox.lost{animation:none}}
+/* Tutorial hint */
+#hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
+  background:rgba(40,12,80,.72);border:3px solid #fff;border-radius:999px;padding:8px 22px 8px 12px;font-family:var(--display);font-size:clamp(20px,4.6vw,28px);
+  white-space:nowrap;pointer-events:none;box-shadow:0 6px 0 rgba(60,20,110,.4);animation:tin .25s ease-out}
+#hint .ar{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--sun);color:#3a2600;font-size:28px;line-height:1;animation:nudge .7s ease-in-out infinite alternate}
+#hint .ar.x{animation-name:nudgex}
+@keyframes nudge{to{transform:translateY(var(--ny,-6px))}}
+@keyframes nudgex{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
+@media (hover:none) and (pointer:coarse){#againKey{display:none}}
+@media (prefers-reduced-motion:reduce){#hint .ar{animation:none}#boostBtn.ready{animation:none}.toast{animation:none}.multbox.pop,.multbox.lost{animation:none}}
 </style>
 
 <canvas id="cv"></canvas>
 
 <div id="hud" hidden>
+  <div id="wprog" aria-hidden="true"><i id="wprogF"></i><span id="wprogL"></span></div>
   <div class="hud-top">
     <button class="roundbtn" id="pauseBtn" aria-label="Menu"><span class="pz"></span>Menu</button>
     <div class="midcol">
@@ -234,6 +308,8 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 </div>
 <div id="chips"></div>
 <div id="banner"></div>
+<div id="closeMsg"></div>
+<div id="hint" hidden><span class="ar" id="hintAr"></span><span id="hintTx"></span></div>
 <div id="toasts"></div>
 
 <section class="screen" id="menu" hidden>
@@ -254,7 +330,7 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
       <button class="btn big" id="playBtn">Play</button>
       <div class="startin" id="startIn">Start in Candy Land</div>
       <div class="row">
-        <button class="btn alt" id="shopBtn">Unicorns</button>
+        <button class="btn alt" id="shopBtn">Shop<i class="dot" id="shopDot" hidden></i></button>
         <button class="btn alt" id="misBtn">Missions</button>
         <button class="btn alt" id="lbBtn">Scores</button>
         <button class="btn alt" id="muteBtn">Sound on</button>
@@ -285,8 +361,10 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 
 <section class="screen" id="shop" hidden>
   <div class="panel">
-    <div class="topbar"><button class="roundbtn" data-back aria-label="Back">‹</button><h2>Unicorns</h2><div class="pill"><i class="ico coin"></i><span id="sCoins">0</span></div></div>
+    <div class="topbar"><button class="roundbtn" data-back aria-label="Back">‹</button><h2>Shop</h2><div class="pill"><i class="ico coin"></i><span id="sCoins">0</span></div></div>
+    <div class="tabs" id="shopTabs" role="tablist"><button class="tab on" data-t="uni" role="tab">Unicorns</button><button class="tab" data-t="upg" role="tab">Upgrades</button></div>
     <div class="grid" id="shopGrid"></div>
+    <div class="mlist" id="upgList" hidden></div>
   </div>
 </section>
 
@@ -312,10 +390,21 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
   </div>
 </section>
 
+<section class="screen" id="gift" hidden>
+  <div class="panel">
+    <h2>Daily gift</h2>
+    <p class="story" id="giftTx">Come back every day for a bigger gift!</p>
+    <div class="days" id="giftDays"></div>
+    <div class="row"><button class="btn gold big" id="giftBtn">Collect</button></div>
+  </div>
+</section>
+
 <section class="screen" id="pause" hidden>
   <div class="panel">
     <h2>Paused</h2>
     <div class="row"><button class="btn big" id="resumeBtn">Resume</button></div>
+    <h3>Today's challenges</h3>
+    <div class="mlist" id="pDaily"></div>
     <div class="row"><button class="btn alt" id="pMute">Sound on</button><button class="btn alt" id="quitBtn">Quit</button></div>
   </div>
 </section>
@@ -329,14 +418,17 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
       <div class="stat"><b id="oScore">0</b><span>Score</span></div>
       <div class="stat"><b id="oDist">0</b><span>Meters</span></div>
       <div class="stat"><b id="oStars">0</b><span>Stars</span></div>
-      <div class="stat"><b id="oCoins">0</b><span>Coins</span></div>
+      <div class="stat"><b id="oCoins">0</b><span>Gold coins</span></div>
       <div class="stat"><b id="oMult" class="overmult">x1</b><span>Top multiplier</span></div>
     </div>
+    <div class="earn" id="oEarn"><i class="ico coin"></i><b id="oEarnN">+0</b><span id="oEarnX"></span></div>
+    <div class="goal" id="oGoal"><span class="eyebrow">Next goal</span><b id="oGoalT"></b><div class="pv-bar"><i id="oGoalF"></i></div><span class="gp" id="oGoalP"></span></div>
     <div class="row" id="reviveRow">
       <button class="btn gold" id="reviveAd">Watch an ad to continue</button>
     </div>
     <div class="row"><button class="btn big" id="againBtn">Play again</button></div>
-    <div class="row"><button class="btn alt" id="oMenu">Menu</button><button class="btn alt" id="oMis">Missions</button><button class="btn alt" id="oLb">Scores</button></div>
+    <div class="keys" id="againKey">or press <kbd>Space</kbd></div>
+    <div class="row"><button class="btn alt" id="oMenu">Menu</button><button class="btn alt" id="oShop">Shop<i class="dot" id="oShopDot" hidden></i></button><button class="btn alt" id="oMis">Missions</button><button class="btn alt" id="oLb">Scores</button></div>
   </div>
 </section>
 
@@ -465,6 +557,16 @@ const POWERS = {
   superjump: { name: 'Superjump', color: 0x3ddc84, dur: 8 }
 };
 
+/* upgrades: each level makes a power-up last longer or the magic boost charge faster */
+const UPG_COST = [200, 450, 800, 1400, 2200];
+const UPGRADES = [
+  { id: 'magnet', name: 'Magnet', ic: 'U', color: 0xff5d7a, val: l => POWERS.magnet.dur + 2 * l, unit: 's', txt: 'Pulls stars to you' },
+  { id: 'double', name: '2x Stars', ic: '2x', color: 0xd9a400, val: l => POWERS.double.dur + 2 * l, unit: 's', txt: 'Every star counts twice' },
+  { id: 'superjump', name: 'Superjump', ic: '↑', color: 0x3ddc84, val: l => POWERS.superjump.dur + 2 * l, unit: 's', txt: 'Jump extra high' },
+  { id: 'boost', name: 'Magic boost', ic: '★', color: 0x9b5cff, val: l => 100 + 15 * l, unit: '%', txt: 'Charge speed from stars' }
+];
+const upLv = id => Math.min(UPG_COST.length, (save.upg && save.upg[id]) || 0);
+const powerDur = k => UPGRADES.find(u => u.id === k) ? UPGRADES.find(u => u.id === k).val(upLv(k)) : POWERS[k].dur;
 const MISSIONS = [
   { id: 'stars', stat: 'stars', mode: 'total', daily: 100, goals: [250, 1000, 3000, 8000, 20000], txt: g => `Collect ${fmt(g)} stars` },
   { id: 'dist', stat: 'dist', mode: 'best', daily: 2000, goals: [1000, 2500, 4000, 6000, 10000], txt: g => `Run ${fmt(g)} m in one run` },
@@ -474,14 +576,16 @@ const MISSIONS = [
   { id: 'unicorns', stat: 'unicorns', mode: 'set', daily: 3, goals: [2, 3, 4, 5, 6], txt: g => `Play with ${g} different unicorns` },
   { id: 'rolls', stat: 'rolls', mode: 'total', daily: 15, goals: [20, 80, 250, 700, 1800], txt: g => `Roll under ${fmt(g)} obstacles` },
   { id: 'boosts', stat: 'boosts', mode: 'total', daily: 3, goals: [5, 20, 60, 150, 400], txt: g => `Use the magic boost ${fmt(g)} times` },
+  { id: 'close', stat: 'close', mode: 'total', daily: 8, goals: [10, 40, 120, 300, 800], txt: g => `Make ${fmt(g)} close calls` },
   { id: 'coins', stat: 'coins', mode: 'total', daily: 20, goals: [30, 120, 400, 1000, 3000], txt: g => `Grab ${fmt(g)} gold coins` }
 ];
 const DAILY_REWARD = 150;
+const GIFTS = [50, 75, 100, 150, 200, 300, 500]; // daily gift by streak day
 
 /* ================= Save ================= */
 const SAVE_KEY = TEST ? 'rainbowrun_test' : 'rainbowrun_v1';
-const zeroStats = () => ({ stars: 0, coins: 0, jumps: 0, rolls: 0, powerups: 0, boosts: 0, dist: 0, score: 0, unicorns: [] });
-const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [] });
+const zeroStats = () => ({ stars: 0, coins: 0, jumps: 0, rolls: 0, powerups: 0, boosts: 0, dist: 0, score: 0, unicorns: [], close: 0 });
+const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [], tut: 0, upg: {}, gift: null });
 let save = defaultSave();
 function showVersion() {
   const d = new Date(BUILD_DATE + 'T12:00:00');
@@ -494,12 +598,37 @@ function loadSave() {
   save = Object.assign(defaultSave(), s || {});
   save.life = Object.assign(zeroStats(), save.life || {});
   if (!Array.isArray(save.runs)) save.runs = [];
+  if (!save.upg || typeof save.upg !== 'object') save.upg = {};
+  if (!save.tut && (save.best > 0 || save.runs.length)) save.tut = 1; // existing players already know the controls
   if (TEST) { save.owned = UNICORNS.map(u => u.id); save.coins = Math.max(save.coins, 99999); save.maxWorld = WORLDS.length - 1; }
   T.world = Math.min(save.startWorld || 0, save.maxWorld || 0); menuW = T.world;
+  if (save.daily && save.daily.stats) save.daily.stats = Object.assign(zeroStats(), save.daily.stats);
   ensureDaily();
 }
 function persist() { try { storage().setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 function todayKey() { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+const dayNum = key => { const [y, m, d] = key.split('-').map(Number); return Math.round(new Date(y, m - 1, d).getTime() / 864e5); };
+function giftDue() {
+  // returns the streak day (1-7) the player can collect today, or 0
+  if (!save.tut) return 0; // let brand-new players play first
+  const g = save.gift, today = dayNum(todayKey());
+  if (!g || !g.last) return 1;
+  const diff = today - dayNum(g.last);
+  if (diff <= 0) return 0;
+  return diff === 1 ? Math.min(GIFTS.length, (g.streak || 0) + 1) : 1;
+}
+function showGift() {
+  const day = giftDue(); if (!day) return false;
+  $('giftDays').innerHTML = GIFTS.map((c, i) => `<div class="day${i + 1 < day ? ' got' : i + 1 === day ? ' now' : ''}"><small>Day ${i + 1}</small><i class="ico coin"></i><b>${c}</b></div>`).join('');
+  $('giftTx').textContent = day > 1 ? `Day ${day} in a row! Come back tomorrow for an even bigger gift.` : 'Come back every day for a bigger gift!';
+  $('giftBtn').textContent = `Collect ${GIFTS[day - 1]} coins`;
+  showScreen('gift'); return true;
+}
+function collectGift() {
+  const day = giftDue();
+  if (day) { save.coins += GIFTS[day - 1]; save.gift = { last: todayKey(), streak: day }; persist(); SFX.done(); toast(`+${GIFTS[day - 1]} coins!`); }
+  refreshMenu(); showScreen('menu');
+}
 function ensureDaily() {
   const t = todayKey();
   if (save.daily && save.daily.date === t) return;
@@ -727,13 +856,14 @@ const SFX = {
   bonk: () => { AU.tone(1500, 0.06, 'square', 0.08, 900); AU.tone(260, 0.3, 'triangle', 0.12, 120); const c = AU.ctx ? AU.ctx.currentTime : 0; [0.3, 0.52, 0.74, 0.96].forEach((d, i) => AU.tone(i % 2 ? 2350 : 2000, 0.08, 'sine', 0.05, i % 2 ? 2800 : 2500, c ? c + d : 0)); },
   multUp: m => { [0, 4, 7, 12].forEach((st, i) => AU.tone(660 * Math.pow(2, (st + Math.min(m, 10)) / 12), 0.14, 'triangle', 0.08, 0, AU.ctx ? AU.ctx.currentTime + i * 0.05 : 0)); },
   multLost: () => { AU.tone(620, 0.32, 'triangle', 0.08, 190); },
+  close: () => { AU.tone(1046, 0.09, 'triangle', 0.07, 1568); AU.tone(1568, 0.14, 'triangle', 0.05, 0, AU.ctx ? AU.ctx.currentTime + 0.06 : 0); },
   done: () => { [659, 784, 988, 1319].forEach((f, i) => AU.tone(f, 0.2, 'triangle', 0.09, 0, AU.ctx ? AU.ctx.currentTime + i * 0.09 : 0)); }
 };
 
 /* ================= Three.js setup ================= */
 const canvas = $('cv');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-const QL = { max: Math.min(window.devicePixelRatio || 1, 1.75), pr: 0, acc: 0, n: 0, cool: 0 };
+const QL = { max: Math.min(window.devicePixelRatio || 1, 1.75), pr: 0, acc: 0, n: 0, cool: 0, low: false, lowN: 0 };
 QL.pr = Math.min(QL.max, (window.devicePixelRatio || 1) > 1.5 ? 1.5 : QL.max);
 renderer.setPixelRatio(QL.pr);
 function qualityTick(rawDt) {
@@ -745,6 +875,9 @@ function qualityTick(rawDt) {
   let pr = QL.pr;
   if (fps < 45) pr = Math.max(0.6, pr - (fps < 30 ? 0.25 : 0.15));
   else if (fps > 58 && pr < QL.max) pr = Math.min(QL.max, pr + 0.1);
+  // still slow at the lowest resolution: spawn fewer far-away props (decor already on screen stays)
+  if (fps < 40 && QL.pr <= 0.75) { if (++QL.lowN >= 2) QL.low = true; } else QL.lowN = 0;
+  if (fps > 58 && QL.low && pr >= 0.9) QL.low = false;
   if (Math.abs(pr - QL.pr) > 0.01) { QL.pr = pr; renderer.setPixelRatio(pr); resize(); QL.cool = 1.5; }
 }
 const scene = new THREE.Scene();
@@ -3182,6 +3315,7 @@ const obstacles = [], items = [], decor = [];
 const cur = () => uniById(save.selected);
 const worldAt = s => menuW !== null ? menuW : (TEST && T.lock) ? T.world : Math.floor((Math.max(0, s) + T.world * WORLD_LEN) / WORLD_LEN) % WORLDS.length;
 
+function dropObs(i) { const o = obstacles[i]; scene.remove(o.mesh); if (o.baked) o.baked.forEach(g => g.dispose()); obstacles.splice(i, 1); }
 function clearAll() {
   for (const a of [obstacles, items, decor]) { a.forEach(e => { scene.remove(e.mesh); if (e.baked) e.baked.forEach(g => g.dispose()); }); a.length = 0; }
   parts.forEach(p => { p.life = 0; p.m.visible = false; });
@@ -3246,14 +3380,14 @@ function mergeInto(list, mat) {
   out.setIndex(new THREE.BufferAttribute(idx, 1));
   return out;
 }
-function bakeNode(node, dyn, made) {
+function bakeNode(node, dyn, made, hi) {
   const groups = new Map();
   node.updateMatrixWorld(true);
   _bi.copy(node.matrixWorld).invert();
   const walk = o => {
     for (const c of o.children) {
       if (dyn.has(c)) continue;
-      if (c.geometry === SPH) c.geometry = SPH_LO; else if (c.geometry === HEMI) c.geometry = HEMI_LO;
+      if (!hi) { if (c.geometry === SPH) c.geometry = SPH_LO; else if (c.geometry === HEMI) c.geometry = HEMI_LO; }
       if (c.isMesh && !c.isInstancedMesh && c.visible && !Array.isArray(c.material) && c.geometry && c.geometry.attributes.position && !c.geometry.morphAttributes.position) {
         const key = c.material.uuid + '|' + c.renderOrder;
         if (!groups.has(key)) groups.set(key, []);
@@ -3276,12 +3410,12 @@ function bakeNode(node, dyn, made) {
     node.add(mm); made.push(mg);
   }
 }
-function bakeProp(root, dyn) {
+function bakeProp(root, dyn, hi) {
   const made = [];
   try {
     root.updateMatrixWorld(true);
-    bakeNode(root, dyn, made);
-    dyn.forEach(d => { let p = d.parent; while (p && p !== root) p = p.parent; if (p === root) bakeNode(d, dyn, made); });
+    bakeNode(root, dyn, made, hi);
+    dyn.forEach(d => { let p = d.parent; while (p && p !== root) p = p.parent; if (p === root) bakeNode(d, dyn, made, hi); });
   } catch (err) { /* leave the prop as it was */ }
   return made;
 }
@@ -3302,6 +3436,7 @@ function spawnDecor(s) {
     const nP = w <= 1 ? 3 : 2;
     for (let k = 0; k < nP; k++) {
       if (Math.random() < ((w <= 1 || w === 4) ? 0.12 : 0.3)) continue;
+      if (QL.low && k > 0 && Math.random() < 0.65) continue;
       const near = k === 0, x = sd * (near ? rand(6.2, 14) : rand(15, 42)), ss = s + rand(-2.5, 2.5);
       const m = pick(props(w))();
       m.scale.multiplyScalar(near ? rand(0.85, 1.25) : rand(1.4, 2.3));
@@ -3345,7 +3480,7 @@ function spawnDecor(s) {
     if (w === 4 && Math.random() < 0.25) { const x = sd * rand(4.5, 9), m = fairy(); m.position.set(x, terrainH(x, s) + 0.5, 0); add(m, s, x); }
     if (w === 3 && Math.random() < 0.07) { const x = sd * rand(13, 34), m = floatingCastle(); m.position.set(x, terrainH(x, s) + rand(6, 11), 0); m.scale.setScalar(rand(1.1, 1.9)); m.rotation.y = rand(0, 6.28); add(m, s, x); }
     if (w === 3 && Math.random() < 0.12) { const x = sd * rand(12, 32), m = DECOR[3][0](); m.position.set(x, terrainH(x, s), 0); add(m, s, x); }
-    if (w !== 5 && Math.random() < 0.16) { const x = sd * rand(10, 45), m = makeCloud(W.cloud); m.position.set(x, rand(9, 16), 0); m.scale.multiplyScalar(rand(1, 1.8)); add(m, s, x); }
+    if (w !== 5 && Math.random() < (QL.low ? 0.06 : 0.16)) { const x = sd * rand(10, 45), m = makeCloud(W.cloud); m.position.set(x, rand(9, 16), 0); m.scale.multiplyScalar(rand(1, 1.8)); add(m, s, x); }
   }
 }
 function spawnDecorOld(s) {
@@ -3362,8 +3497,11 @@ function spawnDecorOld(s) {
   }
 }
 function addObstacle(def, lane, s) {
-  const m = def.build(); m.position.x = LANES[lane]; scene.add(m);
-  obstacles.push({ mesh: m, s, x: LANES[lane], lane, kind: m.userData.kind || def.kind, h: m.userData.h || def.h || 0, top: def.top || 99, dz: m.userData.dz || def.dz, move: def.move || 0, spin: def.spin, spinZ: def.spinZ, spinY: def.spinY, fall: def.fall, passed: false, dead: false });
+  const m = def.build();
+  // merge static parts into one mesh per material (full detail: obstacles are seen up close)
+  const spinNode = (def.spin || def.spinZ) ? m.children[0] : null, baked = bakeProp(m, new Set(spinNode ? [spinNode] : []), true);
+  m.position.x = LANES[lane]; scene.add(m);
+  obstacles.push({ mesh: m, spinNode, baked, s, x: LANES[lane], lane, kind: m.userData.kind || def.kind, h: m.userData.h || def.h || 0, top: def.top || 99, dz: m.userData.dz || def.dz, move: def.move || 0, spin: def.spin, spinZ: def.spinZ, spinY: def.spinY, fall: def.fall, passed: false, dead: false });
 }
 let starGrp = 0, lastStar = null;
 function addItem(type, x, y, s) {
@@ -3460,8 +3598,32 @@ function renderScores() {
   $('lbNote').textContent = CG.lbOn() ? 'Your scores also go to the CrazyGames weekly leaderboard.' : 'Your best runs are saved with your game progress.';
 }
 function openScores(from, mark) { backTo = from; lbMark = mark || null; renderScores(); showScreen('scores'); }
+/* ---------- first-run tutorial: three scripted rows, time slows down until the player reacts ---------- */
+const TUT = [
+  { kind: 'full', key: 'lane', ar: '⇆', touch: 'Swipe left or right', keys: 'Press ← or → to dodge' },
+  { kind: 'low', key: 'jump', ar: '↑', touch: 'Swipe up to jump', keys: 'Press ↑ or Space to jump' },
+  { kind: 'high', key: 'roll', ar: '↓', touch: 'Swipe down to roll', keys: 'Press ↓ to roll under' }
+];
+let touchUser = !!(window.matchMedia && matchMedia('(hover:none) and (pointer:coarse)').matches);
+function tutRow(s, w) {
+  const step = TUT[G.tutN], defs = OBS[w].filter(d => d.kind === step.kind && !d.move && !d.fall);
+  const lanes = step.kind === 'full' ? [G.lane] : [0, 1, 2];
+  for (const L of lanes) { addObstacle(pick(defs), L, s); const o = obstacles[obstacles.length - 1]; o.tut = step; }
+  if (step.kind === 'full') for (let i = 0; i < 4; i++) addItem('star', LANES[G.lane === 1 ? 0 : 1], 0.9, s - 4 + i * 1.8);
+  G.tutN++;
+}
+function tutState() {
+  // the closest tutorial obstacle ahead decides the hint and the slow motion
+  let o = null;
+  for (const q of obstacles) if (q.tut && !q.passed && !q.dead && (!o || q.s < o.s)) o = q;
+  if (!o) return null;
+  const z = G.d - o.s, st = o.tut;
+  const done = st.key === 'lane' ? Math.abs(G.x - o.x) > 1.25 : st.key === 'jump' ? G.y > 0.25 : G.rollT > 0;
+  return { st, z, done, slow: !done && z > -7.5 && z < 0 };
+}
 function spawnRow(s) {
   const w = worldAt(s), defs = OBS[w];
+  if (G.tutN < TUT.length) { tutRow(s, w); return; }
   const diff = Math.min(1, G.d / 3500);
   const gap = rowGap();
   const order = [0, 1, 2].sort(() => Math.random() - 0.5);
@@ -3475,7 +3637,7 @@ function spawnRow(s) {
   const icePatch = defs.find(d => d.kind === 'ice');
   if (icePatch && Math.random() < 0.4) addObstacle(icePatch, pick([0, 1, 2]), s + gap * 0.5);
   const passable = normal.filter(d => d.kind !== 'full');
-  let n = Math.random() < 0.3 + diff * 0.45 ? 2 : 1;
+  let n = Math.random() < (s < 250 ? 0.12 : 0.3 + diff * 0.45) ? 2 : 1;
   const triple = G.d > 600 && Math.random() < 0.08 + diff * 0.12;
   if (triple) {
     for (const L of [0, 1, 2]) addObstacle(pick(passable), L, s);
@@ -3499,7 +3661,7 @@ function spawnRow(s) {
   if (pr < 0.06 && G.d > 150) addItem(pick(Object.keys(POWERS)), LANES[free], 1.1, s + gap * 0.5);
   else if (pr < 0.2) addItem('coin', LANES[pick([0, 1, 2])], 1.0, s + gap * 0.5);
 }
-function rowGap() { return Math.max(11, G.speed * 0.82 + 2); }
+function rowGap() { return (G.tutN < TUT.length || !save.tut) ? 34 : Math.max(11, G.speed * 0.82 + 2); } // roomy rows until the tutorial is done
 
 /* ================= Run control ================= */
 function startRun() {
@@ -3509,7 +3671,7 @@ function startRun() {
   clearAll();
   Object.assign(G, { mode: 'play', d: 0, speed: 14, lane: 1, x: 0, y: 0, vy: 0, rollT: 0, queueRoll: false, score: 0, stars: 0, coins: 0, combo: 0,
     mult: 1, chain: 0, maxMult: 1, touched: new Set(), entry: null,
-    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0 });
+    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0, tutN: save.tut ? TUT.length : 0, coins0: save.coins, paidD: 0, distBonus: 0, recShown: false, laneFrom: -1, laneT: -9 });
   run = zeroStats();
   run.unicorns = [save.selected];
   setUnicorn(save.selected);
@@ -3518,11 +3680,32 @@ function startRun() {
   showScreen(null); $('hud').hidden = false; resetMultHud();
   if (document.activeElement) document.activeElement.blur();
   showBanner(WORLDS[G.world].name, 'World ' + (G.world + 1));
+  for (let i = 0; i < 6; i++) addItem('star', LANES[1], 0.9, 14 + i * 1.8); // an easy first reward
+  setHint(null);
   CG.start();
+}
+let hintKey = null;
+function setHint(st) {
+  const k = st ? st.key + touchUser : null;
+  if (k === hintKey) return; hintKey = k;
+  const h = $('hint'); h.hidden = !st; if (!st) return;
+  $('hintAr').textContent = st.ar; $('hintAr').className = 'ar' + (st.key === 'lane' ? ' x' : '');
+  $('hintAr').style.setProperty('--ny', st.key === 'roll' ? '6px' : '-6px');
+  $('hintTx').textContent = touchUser ? st.touch : st.keys;
+}
+function tutTick() {
+  if (G.tutN === undefined) return 1;
+  const ts = tutState();
+  if (!ts) {
+    if (G.tutN >= TUT.length && !save.tut && G.mode === 'play') { save.tut = 1; persist(); setHint(null); toast('Great job! Now run as far as you can!'); SFX.done(); }
+    setHint(null); return 1;
+  }
+  setHint(ts.z > -26 && !ts.done ? ts.st : null);
+  return ts.slow ? 0.22 : 1;
 }
 function commitRun() {
   const add = (dst) => {
-    for (const k of ['stars', 'coins', 'jumps', 'rolls', 'powerups', 'boosts']) dst[k] += run[k];
+    for (const k of ['stars', 'coins', 'jumps', 'rolls', 'powerups', 'boosts', 'close']) dst[k] = (dst[k] || 0) + (run[k] || 0);
     dst.dist = Math.max(dst.dist, run.dist); dst.score = Math.max(dst.score, run.score);
     dst.unicorns = [...new Set([...dst.unicorns, ...run.unicorns])];
   };
@@ -3533,7 +3716,7 @@ function commitRun() {
 }
 function statValue(m, scope) {
   const base = scope === 'daily' ? save.daily.stats : save.life;
-  if (m.mode === 'total') return base[m.stat] + run[m.stat];
+  if (m.mode === 'total') return (base[m.stat] || 0) + (run[m.stat] || 0);
   if (m.mode === 'best') return Math.max(base[m.stat], run[m.stat]);
   return new Set([...base.unicorns, ...run.unicorns]).size;
 }
@@ -3609,8 +3792,31 @@ function poseDie(dt) {
   }
   u.rig.position.y = Math.min(u.rig.position.y, 0);
 }
+let overAt = 0;
+const DIST_BONUS = 20; // 1 coin per 20 m, paid at the end of a run
+function payDistance() {
+  const due = Math.floor(G.d / DIST_BONUS) - Math.floor((G.paidD || 0) / DIST_BONUS);
+  G.paidD = G.d; if (due > 0) { save.coins += due; G.distBonus = (G.distBonus || 0) + due; }
+}
+function nextGoal() {
+  // the most motivating open goal: the next world, otherwise the mission closest to done
+  const best = Math.max(save.life.dist || 0, run.dist || 0);
+  if (save.maxWorld < WORLDS.length - 1) {
+    const w = save.maxWorld + 1, need = (w - T.world) * WORLD_LEN;
+    if (need > 0) return { t: `Run ${fmt(need)} m in one run to reach ${WORLDS[w].name}`, v: Math.min(G.d, need), g: need, p: `This run: ${fmt(G.d)} m · ${fmt(Math.max(0, need - G.d))} m to go` };
+  }
+  let g = null;
+  for (const m of MISSIONS) {
+    const lv = save.mlevel[m.id] || 0; if (lv >= m.goals.length) continue;
+    const v = statValue(m, 'life'), pct = v / m.goals[lv];
+    if (!g || pct > g.pct) g = { pct, t: `${m.txt(m.goals[lv])} · +${100 * (lv + 1)} coins`, v, g: m.goals[lv] };
+  }
+  if (g) g.p = `${fmt(Math.min(g.v, g.g))} / ${fmt(g.g)}`;
+  return g;
+}
 function gameOver() {
-  G.mode = 'over'; CG.stop();
+  G.mode = 'over'; CG.stop(); overAt = Date.now();
+  payDistance();
   const isRec = G.score > save.best;
   if (isRec) { save.best = Math.floor(G.score); CG.happy(); }
   run.dist = Math.floor(G.d); run.score = Math.floor(G.score);
@@ -3621,14 +3827,20 @@ function gameOver() {
   $('oMult').textContent = 'x' + G.maxMult;
   $('oScore').textContent = fmt(G.score); $('oDist').textContent = fmt(G.d); $('oStars').textContent = fmt(G.stars); $('oCoins').textContent = fmt(G.coins);
   $('newRec').hidden = !isRec;
-  $('reviveRow').hidden = G.revived;
-  $('hud').hidden = true;
+  $('reviveRow').hidden = G.revived || (!CG.ready && !TEST); // no ad SDK (e.g. ad blocker): don't offer a button that cannot work
+  const earned = save.coins - G.coins0;
+  $('oEarnN').textContent = `+${fmt(Math.max(0, earned))} coins`;
+  $('oEarnX').textContent = G.distBonus ? `incl. ${fmt(G.distBonus)} distance bonus` : '';
+  const ng = nextGoal(); $('oGoal').hidden = !ng;
+  if (ng) { $('oGoalT').textContent = ng.t; $('oGoalF').style.width = Math.min(100, ng.v / ng.g * 100) + '%'; $('oGoalP').textContent = ng.p; }
+  $('oShopDot').hidden = !canAfford();
+  persist();
+  $('hud').hidden = true; clearChips();
   showScreen('over');
 }
 function revive() {
   G.revived = true; G.mode = 'play'; G.invT = 2.5;
-  obstacles.filter(o => o.s < G.d + 30).forEach(o => { scene.remove(o.mesh); o.gone = true; });
-  for (let i = obstacles.length - 1; i >= 0; i--) if (obstacles[i].gone) obstacles.splice(i, 1);
+  for (let i = obstacles.length - 1; i >= 0; i--) if (obstacles[i].s < G.d + 30) dropObs(i);
   clearPose(); G.y = 0; G.vy = 0;
   $('hud').hidden = false; showScreen(null); CG.start();
 }
@@ -3637,16 +3849,16 @@ function toMenu() {
   setUnicorn(save.selected); clearPose(); G.x = 0; G.lane = 1; G.y = 0;
   G.world = worldAt(0); paintGround(WORLDS[G.world]); AU.setSong(G.world);
   snapWorld(WORLDS[G.world]); lastInteract = Date.now();
-  $('hud').hidden = true; refreshMenu(); showScreen('menu');
+  $('hud').hidden = true; clearChips(); refreshMenu(); showScreen('menu'); showGift();
 }
-function pauseGame() { if (G.mode !== 'play') return; G.mode = 'pause'; CG.stop(); showScreen('pause'); }
+function pauseGame() { if (G.mode !== 'play') return; G.mode = 'pause'; CG.stop(); renderDaily('pDaily'); showScreen('pause'); }
 function resumeGame() { if (G.mode !== 'pause') return; G.mode = 'play'; CG.start(); showScreen(null); if (document.activeElement) document.activeElement.blur(); }
 
 /* ================= Actions ================= */
 function moveLane(dir) {
   if (G.mode !== 'play') return;
   const n = Math.max(0, Math.min(2, G.lane + dir));
-  if (n !== G.lane) { G.lane = n; SFX.lane(); }
+  if (n !== G.lane) { G.laneFrom = G.lane; G.laneT = t; G.lane = n; SFX.lane(); }
 }
 function jump() {
   if (G.mode !== 'play') return;
@@ -3665,13 +3877,15 @@ function useBoost() {
 /* ================= Input ================= */
 window.addEventListener('wheel', e => { if (!(e.target.closest && e.target.closest('.panel, #menu'))) e.preventDefault(); }, { passive: false });
 window.addEventListener('keydown', e => {
-  const k = e.key;
+  const k = e.key; if (k.startsWith('Arrow') || k === ' ') touchUser = false;
   if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(k)) e.preventDefault();
   if (CG.adBusy) return; // no input while an ad is playing
+  if (!$('gift').hidden && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); collectGift(); return; }
   if (G.mode === 'menu' && (k === 'Enter' || k === ' ') && !$('menu').hidden && document.activeElement === document.body) { startRun(); return; }
+  if (G.mode === 'over' && (k === 'Enter' || k === ' ') && !e.repeat && !$('over').hidden && Date.now() - overAt > 700 && document.activeElement === document.body) { $('againBtn').click(); return; }
   if (k === 'Escape' && G.mode !== 'play' && G.mode !== 'pause') {
     const sub = ['shop', 'missions', 'scores'].find(id => !$(id).hidden);
-    if (sub) { if (backTo === 'menu') refreshMenu(); showScreen(backTo); }
+    if (sub) goBack();
     return;
   }
   if (k === 'p' || k === 'P' || k === 'Escape') { G.mode === 'play' ? pauseGame() : resumeGame(); return; }
@@ -3684,7 +3898,7 @@ window.addEventListener('keydown', e => {
   else if (k === 'Shift' || k === 'e' || k === 'E' || k === 'b' || k === 'B') useBoost();
 });
 let ts = null;
-window.addEventListener('touchstart', e => { if (e.target.closest('button')) return; const t = e.changedTouches[0]; ts = { x: t.clientX, y: t.clientY, done: false }; }, { passive: true });
+window.addEventListener('touchstart', e => { touchUser = true; if (e.target.closest('button')) return; const t = e.changedTouches[0]; ts = { x: t.clientX, y: t.clientY, done: false }; }, { passive: true });
 window.addEventListener('touchmove', e => {
   if (!ts || ts.done) return; const t = e.changedTouches[0]; const dx = t.clientX - ts.x, dy = t.clientY - ts.y;
   if (Math.max(Math.abs(dx), Math.abs(dy)) < 28) return;
@@ -3696,16 +3910,22 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 window.addEventListener('blur', () => pauseGame());
 
 /* ================= UI ================= */
-const SCREENS = ['menu', 'shop', 'missions', 'pause', 'over', 'scores'];
+const SCREENS = ['menu', 'shop', 'missions', 'pause', 'over', 'scores', 'gift'];
 let backTo = 'menu';
 function showScreen(id) { SCREENS.forEach(s => $(s).hidden = s !== id); }
 function showBanner(t, sub) {
   const b = $('banner'); b.innerHTML = `<small>${sub}</small>${t}`; b.classList.add('show');
   clearTimeout(showBanner.t); showBanner.t = setTimeout(() => b.classList.remove('show'), 2000);
 }
-function toast(t) {
-  const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; $('toasts').appendChild(d);
-  setTimeout(() => d.remove(), 3200);
+// at most two toasts on screen; the rest wait their turn so the track stays visible
+const toastQ = [];
+function toast(t) { toastQ.push(t); pumpToasts(); }
+function pumpToasts() {
+  const box = $('toasts');
+  while (toastQ.length && box.children.length < 2) {
+    const d = document.createElement('div'); d.className = 'toast'; d.textContent = toastQ.shift(); box.appendChild(d);
+    setTimeout(() => { d.remove(); pumpToasts(); }, toastQ.length ? 2200 : 3000);
+  }
 }
 function applyWorldPreview() {
   clearAll(); G.d = 0; G.nextDecor = -10; G.nextTerrain = -40;
@@ -3794,10 +4014,33 @@ function refreshMenu() {
   $('mBest').textContent = fmt(save.best); $('mCoins').textContent = fmt(save.coins);
   $('menuName').textContent = cur().name;
   const mp = $('menuPor'); mp.src = portrait(cur().id); mp.alt = cur().name; mp.style.setProperty('--c1', hex(cur().mane[0])); mp.style.setProperty('--c2', hex(cur().mane[1]));
+  $('shopDot').hidden = !canAfford();
   const lbl = save.muted ? 'Sound off' : 'Sound on'; $('muteBtn').textContent = lbl; $('pMute').textContent = lbl;
+}
+let shopTab = 'uni';
+function canAfford() {
+  return UNICORNS.some(u => !save.owned.includes(u.id) && save.coins >= u.price) || UPGRADES.some(u => upLv(u.id) < UPG_COST.length && save.coins >= UPG_COST[upLv(u.id)]);
+}
+function renderUpgrades() {
+  $('upgList').innerHTML = '';
+  UPGRADES.forEach(u => {
+    const lv = upLv(u.id), max = lv >= UPG_COST.length, price = UPG_COST[lv];
+    const row = document.createElement('div'); row.className = 'upg';
+    const now = u.val(lv) + u.unit, nxt = max ? '' : ` → <b>${u.val(lv + 1)}${u.unit}</b>`;
+    row.innerHTML = `<span class="uic" style="background:${hex(u.color)}">${u.ic}</span><div><div class="un">${u.name}</div><div class="ud">${u.txt}: ${now}${nxt}</div></div>` +
+      `<div class="pips" style="grid-column:2">${UPG_COST.map((_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</div>`;
+    const b = document.createElement('button'); b.className = 'btn ' + (max ? 'mint' : 'gold');
+    b.textContent = max ? 'Max' : `Upgrade · ${fmt(price)}`; b.disabled = max || save.coins < price;
+    b.style.gridRow = '1 / span 2'; b.style.gridColumn = '3';
+    b.onclick = () => { if (max || save.coins < price) return; save.coins -= price; save.upg[u.id] = lv + 1; persist(); SFX.done(); toast(`${u.name} upgraded to level ${lv + 1}!`); renderShop(); refreshMenu(); };
+    row.appendChild(b); $('upgList').appendChild(row);
+  });
 }
 function renderShop() {
   $('sCoins').textContent = fmt(save.coins);
+  document.querySelectorAll('#shopTabs .tab').forEach(b => { const on = b.dataset.t === shopTab; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  $('shopGrid').hidden = shopTab !== 'uni'; $('upgList').hidden = shopTab !== 'upg';
+  renderUpgrades();
   const grid = $('shopGrid'); grid.innerHTML = '';
   UNICORNS.forEach(u => {
     const owned = save.owned.includes(u.id), sel = save.selected === u.id;
@@ -3818,9 +4061,12 @@ function misRow(text, val, goal, reward, done) {
   const pct = Math.min(100, val / goal * 100);
   return `<div class="mis${done ? ' done' : ''}"><div class="t">${text}</div><div class="r"><i class="ico coin"></i>${done ? 'Done' : '+' + reward}</div><div class="bar"><i style="width:${done ? 100 : pct}%"></i></div><div class="p">${fmt(Math.min(val, goal))} / ${fmt(goal)}</div></div>`;
 }
+function renderDaily(el) {
+  $(el).innerHTML = save.daily.ids.map(id => { const m = MISSIONS.find(q => q.id === id); return misRow(m.txt(m.daily), statValue(m, 'daily'), m.daily, DAILY_REWARD, save.daily.done.includes(id)); }).join('');
+}
 function renderMissions() {
   ensureDaily();
-  $('dailyList').innerHTML = save.daily.ids.map(id => { const m = MISSIONS.find(q => q.id === id); return misRow(m.txt(m.daily), statValue(m, 'daily'), m.daily, DAILY_REWARD, save.daily.done.includes(id)); }).join('');
+  renderDaily('dailyList');
   $('misList').innerHTML = MISSIONS.map(m => {
     const lv = save.mlevel[m.id] || 0;
     if (lv >= m.goals.length) return misRow(m.txt(m.goals[m.goals.length - 1]) + ' · all done', 1, 1, 0, true);
@@ -3829,23 +4075,27 @@ function renderMissions() {
 }
 const click = (id, f) => $(id).addEventListener('click', e => { AU.init(); f(e); });
 click('playBtn', startRun);
+document.querySelectorAll('#shopTabs .tab').forEach(b => b.addEventListener('click', () => { shopTab = b.dataset.t; renderShop(); }));
 click('shopBtn', () => { backTo = 'menu'; renderShop(); showScreen('shop'); });
 click('misBtn', () => { backTo = 'menu'; renderMissions(); showScreen('missions'); });
+click('oShop', () => { backTo = 'over'; renderShop(); showScreen('shop'); });
 click('oMis', () => { backTo = 'over'; renderMissions(); showScreen('missions'); });
 click('lbBtn', () => openScores('menu'));
 click('oLb', () => openScores('over', G.entry));
 document.querySelectorAll('#lbTabs .tab').forEach(b => b.addEventListener('click', () => { lbPeriod = b.dataset.p; renderScores(); }));
-document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { if (backTo === 'menu') refreshMenu(); showScreen(backTo); }));
+function goBack() { if (backTo === 'menu') refreshMenu(); else if (backTo === 'over') $('oShopDot').hidden = !canAfford(); showScreen(backTo); }
+document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', goBack));
 const toggleMute = () => { save.muted = !save.muted; AU.applyVol(); persist(); refreshMenu(); };
 click('muteBtn', toggleMute); click('pMute', toggleMute);
 click('pauseBtn', pauseGame);
 click('tLock', () => { T.lock = !T.lock; renderTest(); });
 click('tGod', () => { T.god = !T.god; renderTest(); });
 click('resumeBtn', resumeGame);
-click('quitBtn', () => { run.dist = Math.floor(G.d); run.score = Math.floor(G.score); if (G.score > save.best) save.best = Math.floor(G.score); recordRun(); commitRun(); CG.stop(); toMenu(); });
+click('quitBtn', () => { payDistance(); run.dist = Math.floor(G.d); run.score = Math.floor(G.score); if (G.score > save.best) save.best = Math.floor(G.score); recordRun(); commitRun(); CG.stop(); toMenu(); });
 click('boostBtn', useBoost);
 click('againBtn', () => CG.ad('midgame', startRun));
 click('oMenu', toMenu);
+click('giftBtn', collectGift);
 click('reviveAd', () => {
   if (!CG.ready) { if (TEST) revive(); else toast(`Ads only play on ${PLATFORM}. Revive is available there.`); return; }
   CG.ad('rewarded', revive, () => toast('The video could not load. Please try again later.'));
@@ -3853,11 +4103,17 @@ click('reviveAd', () => {
 
 /* ================= HUD ================= */
 const hudCache = {};
+function clearChips() { hudCache.chips = ''; $('chips').innerHTML = ''; }
 function setText(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; $(id).textContent = v; } }
 function updateHud() {
   setText('score', fmt(G.score)); setText('dist', fmt(G.d) + ' m');
   setText('hStars', fmt(G.stars)); setText('hCoins', fmt(G.coins));
   setText('mult', 'x' + G.mult);
+  { const p = ((Math.max(0, G.d) + T.world * WORLD_LEN) % WORLD_LEN) / WORLD_LEN, pw = (p * 100).toFixed(1) + '%';
+    if (hudCache.wp !== pw) { hudCache.wp = pw; $('wprogF').style.width = pw; }
+    const left = Math.ceil((1 - p) * WORLD_LEN), nw = WORLDS[(G.world + 1) % WORLDS.length].name;
+    const near = p > 0.8 && !(TEST && T.lock); $('wprog').classList.toggle('near', near);
+    if (near) setText('wprogL', `${nw} in ${fmt(left)} m`); }
   const mw = (G.mult >= MULT_MAX ? 100 : Math.min(100, G.chain / multNeed(G.mult) * 100)).toFixed(0) + '%';
   if (hudCache.mw !== mw) { hudCache.mw = mw; $('multFill').style.width = mw; }
   $('boostFill').style.width = (G.boostT > 0 ? 100 : G.boost * 100) + '%';
@@ -3874,6 +4130,7 @@ function updateHud() {
 /* ================= Loop ================= */
 function knock(o) { o.dead = true; o.vy = 9; o.vx = rand(-7, 7); o.t = 0; burst(o.x, 1, G.d - o.s, 10); }
 function crash(o) {
+  if (o.tut) { knock(o); G.invT = 0.8; toast('Almost! Try again next time.'); return; }
   if (G.boostT > 0 || G.invT > 0) { knock(o); return; }
   loseMult();
   if (TEST && T.god) { knock(o); return; }
@@ -3881,13 +4138,19 @@ function crash(o) {
   if (cur().id === 'frosty' && !G.frostyUsed) { G.frostyUsed = true; knock(o); G.invT = 1.2; SFX.shield(); toast('Frosty saved you!'); return; }
   die(o.kind);
 }
+function closeCall() {
+  const pts = 50 * (cur().id === 'shadow' ? 1.5 : 1) * G.mult;
+  G.score += pts; run.close++; G.boost = Math.min(1, G.boost + 0.06); G.laneFrom = -1;
+  SFX.close(); const c = $('closeMsg'); c.textContent = `Close call! +${fmt(pts)}`;
+  c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+}
 function collect(it) {
   const mult = cur().id === 'shadow' ? 1.5 : 1;
   if (it.type === 'star') {
     const n = G.power.double > 0 ? 2 : 1;
     G.stars += n; run.stars += n; G.score += 10 * n * mult * G.mult;
     G.touched.add(it.g); addMult(n);
-    G.boost = Math.min(1, G.boost + 0.022 * n);
+    G.boost = Math.min(1, G.boost + 0.022 * n * (1 + 0.15 * upLv('boost')));
     G.combo = G.comboT > 0 ? G.combo + 1 : 0; G.comboT = 0.6; SFX.star(G.combo);
     burst(it.mesh.position.x, it.mesh.position.y, it.mesh.position.z, 4, 2);
   } else if (it.type === 'coin') {
@@ -3897,7 +4160,7 @@ function collect(it) {
   } else {
     run.powerups++; SFX.power();
     if (it.type === 'shield') G.shield = true;
-    else G.power[it.type] = POWERS[it.type].dur * (it.type === 'magnet' && cur().id === 'rainbow' ? 2 : 1);
+    else G.power[it.type] = powerDur(it.type) * (it.type === 'magnet' && cur().id === 'rainbow' ? 2 : 1);
     burst(it.mesh.position.x, it.mesh.position.y, it.mesh.position.z, 12);
   }
 }
@@ -3908,8 +4171,10 @@ const bendTmp = { x: 0, y: 0 };
 let last = performance.now(), t = 0;
 function frame(now, once) {
   if (!once) qualityTick((now - last) / 1000);
-  const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+  let dt = Math.min(0.05, (now - last) / 1000); last = now;
   const playing = G.mode === 'play';
+  if (playing) dt *= tutTick(); else if (hintKey) setHint(null);
+  t += dt;
 
   // ---- movement ----
   if (playing) {
@@ -3935,6 +4200,7 @@ function frame(now, once) {
     if (pidx > save.maxWorld) { save.maxWorld = pidx; persist(); toast(`New world unlocked: ${WORLDS[pidx].name}!`); SFX.done(); }
     while (G.nextRow < G.d + 115) { spawnRow(G.nextRow); G.nextRow += rowGap(); }
     G.liveCheck -= dt; if (G.liveCheck <= 0) { G.liveCheck = 0.5; checkMissions(true); }
+    if (!G.recShown && save.best > 0 && G.score > save.best) { G.recShown = true; showBanner('New record!', 'Keep going'); SFX.done(); }
     gtex.offset.y += sp * dt / 12;
   } else if (G.mode === 'menu') {
     G.d += 7 * dt; gtex.offset.y += 7 * dt / 12;
@@ -3983,25 +4249,25 @@ function frame(now, once) {
     if (playing && o.move && !o.dead) o.s -= o.move * dt;
     const z = G.d - o.s;
     o.mesh.position.z = z;
-    if (o.spin && o.mesh.children[0]) o.mesh.children[0].rotation.x -= dt * 5;
-    if (o.spinZ && o.mesh.children[0]) o.mesh.children[0].rotation.z += dt * 2.5;
+    if (o.spin && o.spinNode) o.spinNode.rotation.x -= dt * 5;
+    if (o.spinZ && o.spinNode) o.spinNode.rotation.z += dt * 2.5;
     if (o.kind === 'portal') o.mesh.rotation.y = Math.sin(t * 2) * 0.3;
     if (o.spinY) o.mesh.rotation.y += dt * 5;
     if (o.fall) o.mesh.position.y = (1 - Math.min(1, Math.max(0, (z + 45) / 30))) * 9;
     if (o.kind === 'ice') {
       if (playing && Math.abs(G.x - o.x) < 1.0 && Math.abs(z) < o.dz) G.slip = 0.3;
-      if (z > 16) { scene.remove(o.mesh); obstacles.splice(i, 1); }
+      if (z > 16) dropObs(i);
       continue;
     }
     if (o.dead) {
       o.t += dt; o.vy -= 25 * dt; o.mesh.position.y += o.vy * dt; o.mesh.position.x += o.vx * dt; o.mesh.rotation.x += dt * 6;
-      if (o.t > 1.2) { scene.remove(o.mesh); obstacles.splice(i, 1); }
+      if (o.t > 1.2) dropObs(i);
       continue;
     }
     if (playing) {
       const overX = Math.abs(G.x - o.x) < 0.9 + 0.3, overZ = Math.abs(z) < o.dz + 0.4;
       if (overX && overZ) {
-        if (o.kind === 'portal') { G.boostT = Math.max(G.boostT, 1.6); G.score += 100; SFX.portal(); burst(o.x, 1.2, z, 16); scene.remove(o.mesh); obstacles.splice(i, 1); continue; }
+        if (o.kind === 'portal') { G.boostT = Math.max(G.boostT, 1.6); G.score += 100; SFX.portal(); burst(o.x, 1.2, z, 16); dropObs(i); continue; }
         const rolling = G.rollT > 0;
         let hit = false;
         if (o.kind === 'low') hit = G.y < o.h - 0.15;
@@ -4011,13 +4277,15 @@ function frame(now, once) {
       }
       if (!o.passed && z > o.dz + 0.6) {
         o.passed = true;
+        // close call: dodged out of this obstacle's lane at the last moment
+        if (o.lane === G.laneFrom && t - G.laneT < 0.42 && G.lane !== o.lane && G.boostT <= 0 && !o.tut) closeCall();
         if (Math.abs(G.x - o.x) < 1.1) {
           if (o.kind === 'low' && G.y > 0.3) run.jumps++;
           if (o.kind === 'high' && G.rollT > 0) run.rolls++;
         }
       }
     }
-    if (z > 12) { scene.remove(o.mesh); obstacles.splice(i, 1); }
+    if (z > 12) dropObs(i);
   }
 
   // ---- items ----
@@ -4160,7 +4428,7 @@ function frame(now, once) {
     } catch (e) { thumbs[i] = ''; }
   }
   menuW = T.world; applyWorldPreview(); snapWorld(WORLDS[T.world]);
-  refreshMenu(); showScreen('menu');
+  refreshMenu(); showScreen('menu'); showGift();
   CG.loadingStop();
   requestAnimationFrame(t0 => { last = t0; frame(t0); });
 })();

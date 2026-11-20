@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Rainbow Run</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
@@ -175,6 +176,32 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
   .hero-row .por.hero{width:84px;height:84px}
   .hero-info > b{font-size:22px}
   .menu-panel .btn.big{font-size:24px;padding:12px 30px}
+}
+/* phones in landscape: keep the two-column menu so Play is visible without scrolling */
+@media (max-height:560px) and (min-width:600px){
+  #menu{display:flex;overflow:hidden;background:linear-gradient(90deg,rgba(50,15,100,.55) 0,rgba(50,15,100,.12) 45%,rgba(0,0,0,0) 65%)}
+  .menu-grid{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);gap:12px;height:100%;min-height:0}
+  .menu-side{order:0;justify-content:space-between;gap:6px}
+  .menu-panel{max-height:100%;overflow-y:auto;align-self:center;padding:10px 14px;gap:7px;border-radius:20px}
+  .menu-panel .logo .big{font-size:30px}
+  .menu-panel .logo .sub{font-size:12px;margin-top:5px}
+  .hero-row{gap:10px}
+  .hero-row .por.hero{width:58px;height:58px}
+  .hero-info{gap:3px}
+  .hero-info > b{font-size:18px}
+  .hero-info .stat{padding:2px 8px;min-width:62px}
+  .hero-info .stat b{font-size:17px}
+  .hero-info .stat span{font-size:10px}
+  .menu-panel .btn.big{font-size:22px;padding:7px 24px}
+  .startin{font-size:12px;margin-top:-3px}
+  .menu-panel .row{gap:6px}
+  .menu-panel .row .btn{font-size:15px;padding:7px 11px;box-shadow:0 4px 0 #4f2bc2}
+  .menu-panel > .keys{display:none}
+  .pv-cap{align-self:flex-end;max-width:340px;padding:8px 12px}
+  .pv-name{text-align:right;font-size:26px}
+  .pv-blurb{display:none}
+  .world-strip > .wcard:first-child{margin-left:auto}
+  .wcard{width:112px}
 }
 .newrec{font-family:var(--display);color:var(--sun);text-align:center;font-size:22px}
 /* Multiplier */

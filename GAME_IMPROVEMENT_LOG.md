@@ -146,3 +146,14 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8.5 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9 | 8* | 8.5* |
 
+## Iteration 11 – Mobile landscape menu (Play above the fold)
+- **Problem:** on phones in landscape (e.g. 844×390, 740×360) the small-screen layout stacked the world picker first; the **Play button sat at y≈522 px, below the fold** – players had to scroll to start. Also the source HTML had no viewport meta (only the platform builds did), so the source/test build rendered as a 980 px desktop page on phones.
+- **Change:** new layout for `max-height:560px` and `min-width:600px`: two columns again, compact menu panel (smaller logo/portrait/buttons, keyboard help hidden), world blurb hidden, smaller world cards. Viewport meta added to the source (and de-duplicated by `build.py`).
+- **Files:** `rainbow-run.html`, `build.py`, `tests/menushots.js` (new).
+- **Tests:** Play button bounding box: 390×844 y=537 ✔, 844×390 y=183 ✔ (was 522 ✘), 740×360 y=168 ✔ (was 522 ✘); screenshots reviewed; functional 56/56, tutorial 16/16, gift 10/10.
+- **Remaining:** not tested on physical devices / notches (safe-area insets are respected by the existing CSS).
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 9 | 8* | 8.5 | 9 | 8.5 | 8* | 7* | 9 | 8.5 | 8.5* |
+
