@@ -83,12 +83,14 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   ok(await ev(() => __rr.save.runs.length === 3), 'quit run recorded');
   // reload keeps progress
   const coins = await ev(() => __rr.save.coins), best2 = await ev(() => __rr.save.best);
-  await page.reload(); await page.waitForFunction(() => window.__rr && !document.getElementById('menu').hidden, null, { timeout: 60000 });
+  await page.reload(); await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
   ok(await ev(() => __rr.save.best) === best2 && await ev(() => __rr.save.coins) === coins, 'progress survives reload');
   // legacy save loads (v1.0.0 format)
   await ev(() => { localStorage.setItem('rainbowrun_v1', JSON.stringify({ coins: 777, owned: ['sparkle', 'golden'], selected: 'golden', best: 4321, muted: false, life: { stars: 10, coins: 1, jumps: 2, rolls: 3, powerups: 0, boosts: 0, dist: 900, score: 4321, unicorns: ['sparkle'] }, mlevel: { stars: 0 }, daily: null, maxWorld: 1, startWorld: 1, runs: [] })); });
-  await page.reload(); await page.waitForFunction(() => window.__rr && !document.getElementById('menu').hidden, null, { timeout: 60000 });
+  await page.reload(); await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
   ok(await ev(() => __rr.save.coins === 777 && __rr.save.selected === 'golden' && __rr.save.best === 4321 && __rr.save.maxWorld === 1), 'v1.0.0 save loads unchanged');
+  ok(await page.isVisible('#gift'), 'existing player gets the daily gift'); await page.click('#giftBtn');
+  ok(await ev(() => __rr.save.coins === 827), 'gift collected on legacy save');
   await setupSim(page); await page.click('#playBtn'); await s.step(120, 'pro');
   ok(await ev(() => __rr.G.mode === 'play' && __rr.G.world === 1), 'legacy save starts in chosen world');
   ok(errors.length === 0, 'no JS errors' + (errors.length ? ': ' + errors.join(' | ') : ''));

@@ -92,3 +92,14 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8 | 7.5* | 8.5* | 8.5 | 8 | 7.5* | 6* | 8.5 | 7.5* | 8* |
 
+## Iteration 6 – Daily gift streak
+- **Problem:** apart from the daily challenges there was little reason to come back tomorrow.
+- **Change:** a Daily gift panel when entering the menu once per day: 7-day streak 50 / 75 / 100 / 150 / 200 / 300 / 500 coins; a missed day restarts at day 1 (no punishment beyond that, no timers or pressure copy). Brand-new players see it only after the tutorial, so the very first session goes straight to playing. Enter/Space/Escape collect. Save gets `gift: {last, streak}`; existing players simply get day 1.
+- **Files:** `rainbow-run.html`, `tests/gift.js` (new), `tests/harness.js`, `tests/functional.js`.
+- **Tests:** gift 10/10 (not for new players, day 1, once per day, streak continues, Enter collects, reset after gap, cap at day 7); functional 51/51 (existing save gets the gift, coins correct).
+- **Remaining:** none.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7.5* | 8.5* | 8.5 | 8 | 8* | 6* | 8.5 | 7.5* | 8* |
+

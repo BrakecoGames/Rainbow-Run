@@ -233,6 +233,13 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 #wprog span{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:8px;font-family:var(--display);font-size:13px;opacity:0;transition:opacity .4s;
   text-shadow:0 2px 0 rgba(60,20,90,.6);white-space:nowrap}
 #wprog.near span{opacity:1}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{background:rgba(255,255,255,.2);border-radius:12px;padding:6px 2px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;border:3px solid transparent}
+.day small{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.day b{font-family:var(--display);font-weight:400;font-size:16px;font-variant-numeric:tabular-nums}
+.day.got{opacity:.55}
+.day.now{border-color:var(--sun);background:rgba(255,230,90,.35);animation:mpop 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.day.now{animation:none}}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
 /* Tutorial hint */
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
@@ -344,6 +351,15 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
     <div class="lbbest"><span id="lbBestL">Your best today</span><b id="lbBest">0</b></div>
     <ol class="lb" id="lbList"></ol>
     <p class="keys" id="lbNote"></p>
+  </div>
+</section>
+
+<section class="screen" id="gift" hidden>
+  <div class="panel">
+    <h2>Daily gift</h2>
+    <p class="story" id="giftTx">Come back every day for a bigger gift!</p>
+    <div class="days" id="giftDays"></div>
+    <div class="row"><button class="btn gold big" id="giftBtn">Collect</button></div>
   </div>
 </section>
 
@@ -525,11 +541,12 @@ const MISSIONS = [
   { id: 'coins', stat: 'coins', mode: 'total', daily: 20, goals: [30, 120, 400, 1000, 3000], txt: g => `Grab ${fmt(g)} gold coins` }
 ];
 const DAILY_REWARD = 150;
+const GIFTS = [50, 75, 100, 150, 200, 300, 500]; // daily gift by streak day
 
 /* ================= Save ================= */
 const SAVE_KEY = TEST ? 'rainbowrun_test' : 'rainbowrun_v1';
 const zeroStats = () => ({ stars: 0, coins: 0, jumps: 0, rolls: 0, powerups: 0, boosts: 0, dist: 0, score: 0, unicorns: [] });
-const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [], tut: 0, upg: {} });
+const defaultSave = () => ({ coins: 0, owned: ['sparkle'], selected: 'sparkle', best: 0, muted: false, life: zeroStats(), mlevel: {}, daily: null, maxWorld: 0, startWorld: 0, runs: [], tut: 0, upg: {}, gift: null });
 let save = defaultSave();
 function showVersion() {
   const d = new Date(BUILD_DATE + 'T12:00:00');
@@ -550,6 +567,28 @@ function loadSave() {
 }
 function persist() { try { storage().setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 function todayKey() { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+const dayNum = key => { const [y, m, d] = key.split('-').map(Number); return Math.round(new Date(y, m - 1, d).getTime() / 864e5); };
+function giftDue() {
+  // returns the streak day (1-7) the player can collect today, or 0
+  if (!save.tut) return 0; // let brand-new players play first
+  const g = save.gift, today = dayNum(todayKey());
+  if (!g || !g.last) return 1;
+  const diff = today - dayNum(g.last);
+  if (diff <= 0) return 0;
+  return diff === 1 ? Math.min(GIFTS.length, (g.streak || 0) + 1) : 1;
+}
+function showGift() {
+  const day = giftDue(); if (!day) return false;
+  $('giftDays').innerHTML = GIFTS.map((c, i) => `<div class="day${i + 1 < day ? ' got' : i + 1 === day ? ' now' : ''}"><small>Day ${i + 1}</small><i class="ico coin"></i><b>${c}</b></div>`).join('');
+  $('giftTx').textContent = day > 1 ? `Day ${day} in a row! Come back tomorrow for an even bigger gift.` : 'Come back every day for a bigger gift!';
+  $('giftBtn').textContent = `Collect ${GIFTS[day - 1]} coins`;
+  showScreen('gift'); return true;
+}
+function collectGift() {
+  const day = giftDue();
+  if (day) { save.coins += GIFTS[day - 1]; save.gift = { last: todayKey(), streak: day }; persist(); SFX.done(); toast(`+${GIFTS[day - 1]} coins!`); }
+  refreshMenu(); showScreen('menu');
+}
 function ensureDaily() {
   const t = todayKey();
   if (save.daily && save.daily.date === t) return;
@@ -3762,7 +3801,7 @@ function toMenu() {
   setUnicorn(save.selected); clearPose(); G.x = 0; G.lane = 1; G.y = 0;
   G.world = worldAt(0); paintGround(WORLDS[G.world]); AU.setSong(G.world);
   snapWorld(WORLDS[G.world]); lastInteract = Date.now();
-  $('hud').hidden = true; clearChips(); refreshMenu(); showScreen('menu');
+  $('hud').hidden = true; clearChips(); refreshMenu(); showScreen('menu'); showGift();
 }
 function pauseGame() { if (G.mode !== 'play') return; G.mode = 'pause'; CG.stop(); showScreen('pause'); }
 function resumeGame() { if (G.mode !== 'pause') return; G.mode = 'play'; CG.start(); showScreen(null); if (document.activeElement) document.activeElement.blur(); }
@@ -3793,6 +3832,7 @@ window.addEventListener('keydown', e => {
   const k = e.key; if (k.startsWith('Arrow') || k === ' ') touchUser = false;
   if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(k)) e.preventDefault();
   if (CG.adBusy) return; // no input while an ad is playing
+  if (!$('gift').hidden && (k === 'Enter' || k === ' ' || k === 'Escape')) { e.preventDefault(); collectGift(); return; }
   if (G.mode === 'menu' && (k === 'Enter' || k === ' ') && !$('menu').hidden && document.activeElement === document.body) { startRun(); return; }
   if (G.mode === 'over' && (k === 'Enter' || k === ' ') && !e.repeat && !$('over').hidden && Date.now() - overAt > 700 && document.activeElement === document.body) { $('againBtn').click(); return; }
   if (k === 'Escape' && G.mode !== 'play' && G.mode !== 'pause') {
@@ -3822,7 +3862,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 window.addEventListener('blur', () => pauseGame());
 
 /* ================= UI ================= */
-const SCREENS = ['menu', 'shop', 'missions', 'pause', 'over', 'scores'];
+const SCREENS = ['menu', 'shop', 'missions', 'pause', 'over', 'scores', 'gift'];
 let backTo = 'menu';
 function showScreen(id) { SCREENS.forEach(s => $(s).hidden = s !== id); }
 function showBanner(t, sub) {
@@ -3998,6 +4038,7 @@ click('quitBtn', () => { payDistance(); run.dist = Math.floor(G.d); run.score = 
 click('boostBtn', useBoost);
 click('againBtn', () => CG.ad('midgame', startRun));
 click('oMenu', toMenu);
+click('giftBtn', collectGift);
 click('reviveAd', () => {
   if (!CG.ready) { if (TEST) revive(); else toast(`Ads only play on ${PLATFORM}. Revive is available there.`); return; }
   CG.ad('rewarded', revive, () => toast('The video could not load. Please try again later.'));
@@ -4322,7 +4363,7 @@ function frame(now, once) {
     } catch (e) { thumbs[i] = ''; }
   }
   menuW = T.world; applyWorldPreview(); snapWorld(WORLDS[T.world]);
-  refreshMenu(); showScreen('menu');
+  refreshMenu(); showScreen('menu'); showGift();
   CG.loadingStop();
   requestAnimationFrame(t0 => { last = t0; frame(t0); });
 })();

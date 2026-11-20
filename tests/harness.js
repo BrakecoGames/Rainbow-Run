@@ -33,7 +33,7 @@ async function launch({ width = 1280, height = 720, mobile = false, file, storag
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
   await page.goto('http://rr.local/');
-  await page.waitForFunction(() => window.__rr && !document.getElementById('menu').hidden, null, { timeout: 60000 });
+  await page.waitForFunction(() => window.__rr && (!document.getElementById('menu').hidden || !document.getElementById('gift').hidden), null, { timeout: 60000 });
   return { browser, ctx, page, errors };
 }
 module.exports = { launch, buildHtml };

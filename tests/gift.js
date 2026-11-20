@@ -1,0 +1,30 @@
+// Daily gift streak checks.
+const { launch } = require('./harness');
+let fails = 0;
+const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fails++; };
+(async () => {
+  const { browser, page, errors } = await launch();
+  const ev = (f, a) => page.evaluate(f, a);
+  ok(!(await page.isVisible('#gift')), 'no gift for a brand-new player (tutorial first)');
+  const key = off => ev(o => { const d = new Date(); d.setDate(d.getDate() - o); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }, off);
+  await ev(() => { __rr.save.tut = 1; __rr.save.coins = 0; __rr.toMenu(); });
+  ok(await page.isVisible('#gift'), 'gift shown on menu after tutorial');
+  ok(/Collect 50 coins/.test(await page.textContent('#giftBtn')), 'day 1 = 50 coins');
+  await page.screenshot({ path: process.env.SHOT || '/dev/null' }).catch(() => {});
+  await page.click('#giftBtn');
+  ok(await ev(() => __rr.save.coins === 50) && await page.isVisible('#menu'), 'collect adds coins and returns to menu');
+  await ev(() => __rr.toMenu()); ok(!(await page.isVisible('#gift')), 'only once per day');
+  const y = await key(1);
+  await ev(y => { __rr.save.gift = { last: y, streak: 3 }; __rr.toMenu(); }, y);
+  ok(/Collect 150 coins/.test(await page.textContent('#giftBtn')), 'yesterday streak 3 -> day 4 = 150');
+  await page.keyboard.press('Enter');
+  ok(await ev(() => __rr.save.coins === 200 && __rr.save.gift.streak === 4), 'Enter collects, streak 4');
+  const old = await key(3);
+  await ev(o => { __rr.save.gift = { last: o, streak: 6 }; __rr.toMenu(); }, old);
+  ok(/Collect 50 coins/.test(await page.textContent('#giftBtn')), 'missed days reset to day 1');
+  await ev(y => { __rr.save.gift = { last: y, streak: 7 }; __rr.toMenu(); }, y);
+  ok(/Collect 500 coins/.test(await page.textContent('#giftBtn')), 'streak caps at day 7 = 500');
+  ok(errors.length === 0, 'no JS errors ' + errors.join('|'));
+  await browser.close();
+  console.log(fails ? `${fails} FAILED` : 'ALL PASSED'); process.exit(fails ? 1 : 0);
+})();
