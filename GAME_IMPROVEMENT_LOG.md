@@ -70,3 +70,14 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 8 | 7* | 8.5* | 8 | 7.5 | 7* | 6* | 8 | 7.5* | 7.5* |
 
+## Iteration 4 – Rewarding game-over screen
+- **Problem:** the game-over screen did not show what the run *earned* or what to aim for next; coin income was ~25 coins per km, so upgrades/unicorns felt far away. Also found a bug: active power-up chips (e.g. "Magnet 5s") stayed on screen over the game-over panel and menu.
+- **Change:** distance bonus of 1 coin per 20 m (paid at game over / quit, never twice after a revive). Game-over panel shows **"+N coins (incl. X distance bonus)"**, a **Next goal** card (next world to unlock with progress bar and metres to go, otherwise the mission closest to completion) and a **Shop** button with the affordability dot. "Coins" stat renamed "Gold coins" to avoid confusion. Compact layout for short landscape screens. Chips are cleared on game over and on returning to the menu.
+- **Files:** `rainbow-run.html`, `tests/functional.js`.
+- **Tests:** functional 46/46 (bonus = ⌊d/20⌋, earned text, next-goal text, Shop from game over + Escape back, chips cleared, Space restart), tutorial 16/16.
+- **Remaining:** none known.
+
+| Eerste indruk | Gameplay | Visueel | UX | Progressie | Retentie | Performance | Stabiliteit | Mobiel | CrazyGames |
+|---|---|---|---|---|---|---|---|---|---|
+| 8 | 7* | 8.5* | 8.5 | 8 | 7.5* | 6* | 8.5 | 7.5* | 8* |
+

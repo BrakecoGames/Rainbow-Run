@@ -54,12 +54,19 @@ const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg); if (!c) fai
   await ev(() => { __rr.G.invT = 0; });
   const r = await s.run(300, 'idle'); await s.step(200);
   ok(r.mode !== 'play' && await ev(() => __rr.G.mode === 'over') && await page.isVisible('#over'), 'idle player crashes, game-over screen shown');
+  const ov = await ev(() => ({ d: __rr.G.d, bonus: __rr.G.distBonus, earned: __rr.save.coins - __rr.G.coins0, txt: document.getElementById('oEarnN').textContent, goal: document.getElementById('oGoalT').textContent }));
+  ok(ov.bonus === Math.floor(ov.d / 20) && ov.earned >= ov.bonus && ov.txt === `+${ov.earned.toLocaleString('en-US')} coins`, `coins earned shown incl. distance bonus (${ov.txt}, bonus ${ov.bonus})`);
+  ok(/Run .* m in one run to reach Enchanted Forest/.test(ov.goal) && await page.isVisible('#oGoal'), 'next goal shows next world: ' + ov.goal);
+  await page.screenshot({ path: (process.env.SHOT || '/dev/null').replace('.png', '-over.png') }).catch(() => {});
+  ok(await ev(() => document.getElementById('chips').children.length === 0), 'power-up chips cleared on game over');
+  await page.click('#oShop'); ok(await page.isVisible('#shop'), 'Shop opens from game over');
+  await page.keyboard.press('Escape'); ok(await page.isVisible('#over'), 'Escape returns to game over');
   const best = await ev(() => __rr.save.best);
   ok(best > 0, 'record saved after run');
   ok(await ev(() => JSON.parse(localStorage.getItem('rainbowrun_v1')).best) === best, 'save written to localStorage');
   ok(await ev(() => __rr.save.runs.length === 1), 'run recorded on scoreboard');
   // space restarts after a short delay
-  await page.waitForTimeout(800); await page.keyboard.press('Space');
+  await ev(() => document.activeElement.blur()); await page.waitForTimeout(800); await page.keyboard.press('Space');
   ok(await ev(() => __rr.G.mode === 'play'), 'Space on game-over plays again');
   await s.step(120, 'pro');
   // quit from pause

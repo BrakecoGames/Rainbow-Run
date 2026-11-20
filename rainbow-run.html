@@ -221,6 +221,13 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
 .upg .pips i{width:18px;height:8px;border-radius:99px;background:rgba(60,20,110,.35)}
 .upg .pips i.on{background:var(--sun)}
 .upg .btn{grid-row:span 2;font-size:16px;padding:8px 14px;white-space:nowrap}
+.earn{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-size:24px;color:#fff27a;text-shadow:0 2px 0 rgba(120,30,140,.45)}
+.earn span{font-family:var(--body);font-weight:800;font-size:13px;color:var(--muted);text-shadow:none}
+.goal{background:rgba(255,255,255,.2);border-radius:14px;padding:8px 14px;display:flex;flex-direction:column;gap:2px}
+.goal b{font-weight:900;font-size:15px}
+.goal .pv-bar{margin-top:4px}
+.goal .gp{font-size:12px;color:var(--muted);font-weight:800;font-variant-numeric:tabular-nums}
+@media (max-height:560px){#over .panel{gap:8px;padding:14px 18px}#over .stat{padding:4px 10px;min-width:76px}#over .stat b{font-size:20px}#over h2{font-size:24px}}
 .lbempty{text-align:center;padding:18px 8px;color:var(--muted);font-weight:800}
 /* Tutorial hint */
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;
@@ -351,15 +358,17 @@ kbd{font-family:var(--body);font-weight:900;background:rgba(255,255,255,.12);bor
       <div class="stat"><b id="oScore">0</b><span>Score</span></div>
       <div class="stat"><b id="oDist">0</b><span>Meters</span></div>
       <div class="stat"><b id="oStars">0</b><span>Stars</span></div>
-      <div class="stat"><b id="oCoins">0</b><span>Coins</span></div>
+      <div class="stat"><b id="oCoins">0</b><span>Gold coins</span></div>
       <div class="stat"><b id="oMult" class="overmult">x1</b><span>Top multiplier</span></div>
     </div>
+    <div class="earn" id="oEarn"><i class="ico coin"></i><b id="oEarnN">+0</b><span id="oEarnX"></span></div>
+    <div class="goal" id="oGoal"><span class="eyebrow">Next goal</span><b id="oGoalT"></b><div class="pv-bar"><i id="oGoalF"></i></div><span class="gp" id="oGoalP"></span></div>
     <div class="row" id="reviveRow">
       <button class="btn gold" id="reviveAd">Watch an ad to continue</button>
     </div>
     <div class="row"><button class="btn big" id="againBtn">Play again</button></div>
     <div class="keys" id="againKey">or press <kbd>Space</kbd></div>
-    <div class="row"><button class="btn alt" id="oMenu">Menu</button><button class="btn alt" id="oMis">Missions</button><button class="btn alt" id="oLb">Scores</button></div>
+    <div class="row"><button class="btn alt" id="oMenu">Menu</button><button class="btn alt" id="oShop">Shop<i class="dot" id="oShopDot" hidden></i></button><button class="btn alt" id="oMis">Missions</button><button class="btn alt" id="oLb">Scores</button></div>
   </div>
 </section>
 
@@ -3568,7 +3577,7 @@ function startRun() {
   clearAll();
   Object.assign(G, { mode: 'play', d: 0, speed: 14, lane: 1, x: 0, y: 0, vy: 0, rollT: 0, queueRoll: false, score: 0, stars: 0, coins: 0, combo: 0,
     mult: 1, chain: 0, maxMult: 1, touched: new Set(), entry: null,
-    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0, tutN: save.tut ? TUT.length : 0 });
+    boost: 0, boostT: 0, shield: false, frostyUsed: false, power: { magnet: 0, double: 0, superjump: 0 }, invT: 0, world: worldAt(0), slip: 0, nextRow: 45, nextDecor: -10, nextTerrain: -40, revived: false, shake: 0, liveCheck: 0, tutN: save.tut ? TUT.length : 0, coins0: save.coins, paidD: 0, distBonus: 0 });
   run = zeroStats();
   run.unicorns = [save.selected];
   setUnicorn(save.selected);
@@ -3690,8 +3699,30 @@ function poseDie(dt) {
   u.rig.position.y = Math.min(u.rig.position.y, 0);
 }
 let overAt = 0;
+const DIST_BONUS = 20; // 1 coin per 20 m, paid at the end of a run
+function payDistance() {
+  const due = Math.floor(G.d / DIST_BONUS) - Math.floor((G.paidD || 0) / DIST_BONUS);
+  G.paidD = G.d; if (due > 0) { save.coins += due; G.distBonus = (G.distBonus || 0) + due; }
+}
+function nextGoal() {
+  // the most motivating open goal: the next world, otherwise the mission closest to done
+  const best = Math.max(save.life.dist || 0, run.dist || 0);
+  if (save.maxWorld < WORLDS.length - 1) {
+    const w = save.maxWorld + 1, need = (w - T.world) * WORLD_LEN;
+    if (need > 0) return { t: `Run ${fmt(need)} m in one run to reach ${WORLDS[w].name}`, v: Math.min(G.d, need), g: need, p: `This run: ${fmt(G.d)} m · ${fmt(Math.max(0, need - G.d))} m to go` };
+  }
+  let g = null;
+  for (const m of MISSIONS) {
+    const lv = save.mlevel[m.id] || 0; if (lv >= m.goals.length) continue;
+    const v = statValue(m, 'life'), pct = v / m.goals[lv];
+    if (!g || pct > g.pct) g = { pct, t: `${m.txt(m.goals[lv])} · +${100 * (lv + 1)} coins`, v, g: m.goals[lv] };
+  }
+  if (g) g.p = `${fmt(Math.min(g.v, g.g))} / ${fmt(g.g)}`;
+  return g;
+}
 function gameOver() {
   G.mode = 'over'; CG.stop(); overAt = Date.now();
+  payDistance();
   const isRec = G.score > save.best;
   if (isRec) { save.best = Math.floor(G.score); CG.happy(); }
   run.dist = Math.floor(G.d); run.score = Math.floor(G.score);
@@ -3703,7 +3734,14 @@ function gameOver() {
   $('oScore').textContent = fmt(G.score); $('oDist').textContent = fmt(G.d); $('oStars').textContent = fmt(G.stars); $('oCoins').textContent = fmt(G.coins);
   $('newRec').hidden = !isRec;
   $('reviveRow').hidden = G.revived;
-  $('hud').hidden = true;
+  const earned = save.coins - G.coins0;
+  $('oEarnN').textContent = `+${fmt(Math.max(0, earned))} coins`;
+  $('oEarnX').textContent = G.distBonus ? `incl. ${fmt(G.distBonus)} distance bonus` : '';
+  const ng = nextGoal(); $('oGoal').hidden = !ng;
+  if (ng) { $('oGoalT').textContent = ng.t; $('oGoalF').style.width = Math.min(100, ng.v / ng.g * 100) + '%'; $('oGoalP').textContent = ng.p; }
+  $('oShopDot').hidden = !canAfford();
+  persist();
+  $('hud').hidden = true; clearChips();
   showScreen('over');
 }
 function revive() {
@@ -3718,7 +3756,7 @@ function toMenu() {
   setUnicorn(save.selected); clearPose(); G.x = 0; G.lane = 1; G.y = 0;
   G.world = worldAt(0); paintGround(WORLDS[G.world]); AU.setSong(G.world);
   snapWorld(WORLDS[G.world]); lastInteract = Date.now();
-  $('hud').hidden = true; refreshMenu(); showScreen('menu');
+  $('hud').hidden = true; clearChips(); refreshMenu(); showScreen('menu');
 }
 function pauseGame() { if (G.mode !== 'play') return; G.mode = 'pause'; CG.stop(); showScreen('pause'); }
 function resumeGame() { if (G.mode !== 'pause') return; G.mode = 'play'; CG.start(); showScreen(null); if (document.activeElement) document.activeElement.blur(); }
@@ -3753,7 +3791,7 @@ window.addEventListener('keydown', e => {
   if (G.mode === 'over' && (k === 'Enter' || k === ' ') && !e.repeat && !$('over').hidden && Date.now() - overAt > 700 && document.activeElement === document.body) { $('againBtn').click(); return; }
   if (k === 'Escape' && G.mode !== 'play' && G.mode !== 'pause') {
     const sub = ['shop', 'missions', 'scores'].find(id => !$(id).hidden);
-    if (sub) { if (backTo === 'menu') refreshMenu(); showScreen(backTo); }
+    if (sub) goBack();
     return;
   }
   if (k === 'p' || k === 'P' || k === 'Escape') { G.mode === 'play' ? pauseGame() : resumeGame(); return; }
@@ -3937,18 +3975,20 @@ click('playBtn', startRun);
 document.querySelectorAll('#shopTabs .tab').forEach(b => b.addEventListener('click', () => { shopTab = b.dataset.t; renderShop(); }));
 click('shopBtn', () => { backTo = 'menu'; renderShop(); showScreen('shop'); });
 click('misBtn', () => { backTo = 'menu'; renderMissions(); showScreen('missions'); });
+click('oShop', () => { backTo = 'over'; renderShop(); showScreen('shop'); });
 click('oMis', () => { backTo = 'over'; renderMissions(); showScreen('missions'); });
 click('lbBtn', () => openScores('menu'));
 click('oLb', () => openScores('over', G.entry));
 document.querySelectorAll('#lbTabs .tab').forEach(b => b.addEventListener('click', () => { lbPeriod = b.dataset.p; renderScores(); }));
-document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { if (backTo === 'menu') refreshMenu(); showScreen(backTo); }));
+function goBack() { if (backTo === 'menu') refreshMenu(); else if (backTo === 'over') $('oShopDot').hidden = !canAfford(); showScreen(backTo); }
+document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', goBack));
 const toggleMute = () => { save.muted = !save.muted; AU.applyVol(); persist(); refreshMenu(); };
 click('muteBtn', toggleMute); click('pMute', toggleMute);
 click('pauseBtn', pauseGame);
 click('tLock', () => { T.lock = !T.lock; renderTest(); });
 click('tGod', () => { T.god = !T.god; renderTest(); });
 click('resumeBtn', resumeGame);
-click('quitBtn', () => { run.dist = Math.floor(G.d); run.score = Math.floor(G.score); if (G.score > save.best) save.best = Math.floor(G.score); recordRun(); commitRun(); CG.stop(); toMenu(); });
+click('quitBtn', () => { payDistance(); run.dist = Math.floor(G.d); run.score = Math.floor(G.score); if (G.score > save.best) save.best = Math.floor(G.score); recordRun(); commitRun(); CG.stop(); toMenu(); });
 click('boostBtn', useBoost);
 click('againBtn', () => CG.ad('midgame', startRun));
 click('oMenu', toMenu);
@@ -3959,6 +3999,7 @@ click('reviveAd', () => {
 
 /* ================= HUD ================= */
 const hudCache = {};
+function clearChips() { hudCache.chips = ''; $('chips').innerHTML = ''; }
 function setText(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; $(id).textContent = v; } }
 function updateHud() {
   setText('score', fmt(G.score)); setText('dist', fmt(G.d) + ' m');
